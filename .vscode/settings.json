@@ -1,2 +1,4 @@
 {
+    "python.dataScience.jupyterServerURI": "local",
+    "python.pythonPath": "env0/bin/python"
 }

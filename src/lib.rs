@@ -113,6 +113,7 @@ impl Transaction {
     }
 
     #[args(
+        limit = 1,
         include_start = "true",
         include_end = "false",
     )]
@@ -204,24 +205,24 @@ fn to_py_execption(err: impl std::fmt::Display) -> PyErr {
     PyException::new_err(format!("{}", err))
 }
 
-fn from_py_bytes(bytes: Py<PyBytes>) -> Vec<u8> {
-    Python::with_gil(|py| bytes.as_ref(py).as_bytes().to_vec())
-}
+// fn from_py_bytes(bytes: Py<PyBytes>) -> Vec<u8> {
+//     Python::with_gil(|py| bytes.as_ref(py).as_bytes().to_vec())
+// }
 
 fn to_py_bytes(bytes: Vec<u8>) -> Py<PyBytes> {
     Python::with_gil(|py| PyBytes::new(py, &bytes).into())
 }
 
-fn from_py_key_list(list: Py<PyList>) -> PyResult<Vec<tikv_client::Key>> {
-    Python::with_gil(|py| {
-        let mut results = Vec::new();
-        for item in list.as_ref(py) {
-            let bytes = item.downcast::<PyBytes>()?;
-            results.push(bytes.as_bytes().to_vec().into());
-        }
-        Ok(results)
-    })
-}
+// fn from_py_key_list(list: Py<PyList>) -> PyResult<Vec<tikv_client::Key>> {
+//     Python::with_gil(|py| {
+//         let mut results = Vec::new();
+//         for item in list.as_ref(py) {
+//             let bytes = item.downcast::<PyBytes>()?;
+//             results.push(bytes.as_bytes().to_vec().into());
+//         }
+//         Ok(results)
+//     })
+// }
 
 fn to_py_dict(kv_pairs: impl Iterator<Item = tikv_client::KvPair>) -> PyResult<Py<PyDict>> {
     Python::with_gil(|py| {

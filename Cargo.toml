@@ -1,7 +1,7 @@
 [package]
 authors = ["Andy Lok <andylokandy@hotmail.com>"]
 edition = "2018"
-name = "tikv-client-py"
+name = "tikv-client"
 version = "0.1.0"
 
 [dependencies]
