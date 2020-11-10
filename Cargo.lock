@@ -1689,7 +1689,7 @@ dependencies = [
 
 [[package]]
 name = "tikv-client"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "futures 0.3.8",
  "lazy_static",

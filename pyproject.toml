@@ -1,3 +1,18 @@
+[project]
+name = "tikv_client"
+version = "0.1.1"
+description = "TiKV client (Python)"
+readme = "README.md"
+requires-python = ">=3.5"
+license = { file = "LICENSE" }
+keywords = ["TiKV"]
+authors = [
+  { name = "Andy Lok", email = "andylokandy@hotmail.com" }
+]
+maintainers = [
+  {name = "Andy Lok", email = "andylokandy@hotmail.com"}
+]
+
 [build-system]
 requires = ["maturin"]
 build-backend = "maturin"

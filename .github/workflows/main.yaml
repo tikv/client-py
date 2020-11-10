@@ -1,4 +1,4 @@
-name: Build and Publish
+name: Build and publish
 
 on:
   push:
@@ -11,7 +11,7 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-18.04, macos-10.15]
-        python-version: [3.5, 3.6, 3.7, 3.8, 3.9]
+        python-version: ["3.5", "3.6", "3.7", "3.8", "3.9"]
     name: Build with Python ${{ matrix.python-version }} on ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v2
@@ -23,17 +23,18 @@ jobs:
       - name: Install pip dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install maturin
+          pip install maturin twine
       - name: Install Rust
         uses: actions-rs/toolchain@v1
         with:
             toolchain: nightly
             override: true
-      - name: Build
+      - name: Build package
         run: |
           maturin build
       - name: Publish package to PyPI
-        uses: pypa/gh-action-pypi-publish@master
-        with:
-          password: ${{ secrets.test_pypi_password }}
-          packages_dir: custom-dir/
+        env:
+          TWINE_USERNAME: ${{ secrets.TWINE_USERNAME }}
+          TWINE_PASSWORD: ${{ secrets.TWINE_PASSWORD }}
+        run: |
+          twine upload --repository-url https://test.pypi.org/legacy/ target/wheels/*.whl
