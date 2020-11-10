@@ -1,20 +1,25 @@
 name: Build and publish
 
-on:
-  push:
-    branches:
-      - master
+# on:
+#   push:
+#     branches:
+#       - master
+
+on: [workflow_dispatch]
 
 jobs:
   build:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ubuntu-18.04, macos-10.15]
+        os: [ubuntu-18.04, macos-10.15, windows-latest]
         python-version: ["3.5", "3.6", "3.7", "3.8", "3.9"]
     name: Build with Python ${{ matrix.python-version }} on ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v2
+      - name: Add MSBuild to PATH
+        if: ${{ matrix.os }} == "windows-latest"
+        uses: microsoft/setup-msbuild@v1.0.2
       - name: Setup python
         uses: actions/setup-python@v2
         with:
