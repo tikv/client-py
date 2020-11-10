@@ -1,6 +1,8 @@
 # TiKV Client (Python)
 
-This library is still in heavy development and is in the stage of prove-of-concept.
+This library is in the stage of prove-of-concept and still under heavy development.
+
+This client is built on top of [tikv-client-rs](https://github.com/tikv/client-rust) via CFFI and [PyO3 Python binding](https://github.com/PyO3/pyo3).
 
 ## Install (Development)
 
