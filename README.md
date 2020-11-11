@@ -1,8 +1,22 @@
 # TiKV Client (Python)
 
-This library is in the stage of prove-of-concept and still under heavy development.
+![Build and publish](https://github.com/andylokandy/client-py/workflows/Build%20and%20publish/badge.svg)
 
-This client is built on top of [tikv-client-rs](https://github.com/tikv/client-rust) via CFFI and [PyO3 Python binding](https://github.com/PyO3/pyo3).
+This library is a TiKV client in Python; it supports both synchronous and asynchronous API. 
+
+It's built on top of 
+[TiKV Client in Rust](https://github.com/tikv/client-rust) via 
+CFFI and [PyO3 Python binding](https://github.com/PyO3/pyo3). 
+
+This client is still in the stage of prove-of-concept and under heavy development.
+
+## Install
+
+The package requires Python 3.5+.
+
+```
+pip3 install -i https://test.pypi.org/simple/ tikv-client
+```
 
 ## Install (Development)
 
@@ -27,7 +41,7 @@ Successfully installed tikv-client-0.1.0
 
 ## Example
 
-TiKV client use synchronous by defult:
+Python TiKV client is synchronous by defult:
 
 ```python
 from tikv_client.transaction import Client

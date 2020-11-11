@@ -112,11 +112,7 @@ impl Transaction {
         })
     }
 
-    #[args(
-        limit = 1,
-        include_start = "true",
-        include_end = "false",
-    )]
+    #[args(limit = 1, include_start = "true", include_end = "false")]
     fn scan(
         &self,
         start: Vec<u8>,

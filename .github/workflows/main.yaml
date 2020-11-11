@@ -38,12 +38,12 @@ jobs:
         with:
             toolchain: nightly
             override: true
-      - name: Build package
+      # - name: Build package
+      #   run: |
+      #     maturin build --interpreter python${{ matrix.python-version }}
+      - name: Build and publish package to PyPi
         run: |
-          maturin build --interpreter python${{ matrix.python-version }}
-      - name: Publish package to PyPi
-        run: |
-          maturin publish --interpreter python${{ matrix.python-version }} --repository-url https://test.pypi.org/legacy/ -u ${{ secrets.TWINE_USERNAME }} -p ${{ secrets.TWINE_PASSWORD }}
+          maturin publish --no-sdist --interpreter python${{ matrix.python-version }} --repository-url https://test.pypi.org/legacy/ -u ${{ secrets.PYPI_USERNAME }} -p ${{ secrets.PYPI_PASSWORD }}
       # - name: Publish package to PyPI
       #   env:
       #     TWINE_USERNAME: ${{ secrets.TWINE_USERNAME }}
