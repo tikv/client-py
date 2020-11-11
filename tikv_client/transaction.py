@@ -67,9 +67,9 @@ class Transaction:
         event_loop = asyncio.get_event_loop()
         event_loop.run_until_complete(self.inner.lock_keys(keys))
 
-    def put(self, key, val):
+    def put(self, key, value):
         event_loop = asyncio.get_event_loop()
-        event_loop.run_until_complete(self.inner.put(key, val))
+        event_loop.run_until_complete(self.inner.put(key, value))
 
     def delete(self, key):
         event_loop = asyncio.get_event_loop()
