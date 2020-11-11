@@ -1,19 +1,48 @@
 import asyncio
 from .tikv_client import Client as AsyncClient
 
+
 class Client:
     def __init__(self, pd_endpoint):
         self.inner = AsyncClient(pd_endpoint)
-    
-    def begin(self):
+
+    def begin(self, pessimistic=False):
         event_loop = asyncio.get_event_loop()
-        transaction = event_loop.run_until_complete(self.inner.begin())
+        transaction = event_loop.run_until_complete(
+            self.inner.begin(pessimistic))
         return Transaction(transaction)
+
+    def current_timestamp(self):
+        event_loop = asyncio.get_event_loop()
+        return event_loop.run_until_complete(
+            self.inner.current_timestamp())
+
+    def snapshot(self, timestamp):
+        snapshot = self.inner.snapshot(timestamp)
+        return Snapshot(snapshot)
+
+
+class Snapshot:
+    def __init__(self, inner):
+        self.inner = inner
+
+    def get(self, key):
+        event_loop = asyncio.get_event_loop()
+        return event_loop.run_until_complete(self.inner.get(key))
+
+    def batch_get(self, keys):
+        event_loop = asyncio.get_event_loop()
+        return event_loop.run_until_complete(self.inner.batch_get(keys))
+
+    def scan(self, start, end=None, limit=1, include_start=True, include_end=False, key_only=False):
+        event_loop = asyncio.get_event_loop()
+        return event_loop.run_until_complete(self.inner.scan(start, end, limit, include_start, include_end, key_only))
+
 
 class Transaction:
     def __init__(self, inner):
         self.inner = inner
-    
+
     def get(self, key):
         event_loop = asyncio.get_event_loop()
         return event_loop.run_until_complete(self.inner.get(key))
@@ -30,9 +59,9 @@ class Transaction:
         event_loop = asyncio.get_event_loop()
         return event_loop.run_until_complete(self.inner.batch_get_for_update(keys))
 
-    def scan(self, start, end=None, limit=1, include_start=True, include_end=False):
+    def scan(self, start, end=None, limit=1, include_start=True, include_end=False, key_only=False):
         event_loop = asyncio.get_event_loop()
-        return event_loop.run_until_complete(self.inner.scan(start, end, limit, include_start, include_end))
+        return event_loop.run_until_complete(self.inner.scan(start, end, limit, include_start, include_end, key_only))
 
     def lock_keys(self, keys):
         event_loop = asyncio.get_event_loop()

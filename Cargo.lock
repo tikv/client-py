@@ -904,7 +904,7 @@ dependencies = [
 [[package]]
 name = "mock-tikv"
 version = "0.0.0"
-source = "git+https://github.com/tikv/client-rust.git?branch=master#1c72722ed50201dacd641e8e4117860844ac58bf"
+source = "git+https://github.com/andylokandy/client-rust.git?branch=master#5dc0e859dc5ec45e9efc82278a45a6fb23210749"
 dependencies = [
  "derive-new",
  "futures 0.3.8",
@@ -1664,7 +1664,7 @@ dependencies = [
 [[package]]
 name = "tikv-client"
 version = "0.0.0"
-source = "git+https://github.com/tikv/client-rust.git?branch=master#1c72722ed50201dacd641e8e4117860844ac58bf"
+source = "git+https://github.com/andylokandy/client-rust.git?branch=master#5dc0e859dc5ec45e9efc82278a45a6fb23210749"
 dependencies = [
  "async-trait",
  "derive-new",
@@ -1701,7 +1701,7 @@ dependencies = [
 [[package]]
 name = "tikv-client-common"
 version = "0.0.0"
-source = "git+https://github.com/tikv/client-rust.git?branch=master#1c72722ed50201dacd641e8e4117860844ac58bf"
+source = "git+https://github.com/andylokandy/client-rust.git?branch=master#5dc0e859dc5ec45e9efc82278a45a6fb23210749"
 dependencies = [
  "failure",
  "futures 0.3.8",
@@ -1715,7 +1715,7 @@ dependencies = [
 [[package]]
 name = "tikv-client-pd"
 version = "0.0.0"
-source = "git+https://github.com/tikv/client-rust.git?branch=master#1c72722ed50201dacd641e8e4117860844ac58bf"
+source = "git+https://github.com/andylokandy/client-rust.git?branch=master#5dc0e859dc5ec45e9efc82278a45a6fb23210749"
 dependencies = [
  "async-trait",
  "futures 0.3.8",
@@ -1728,7 +1728,7 @@ dependencies = [
 [[package]]
 name = "tikv-client-proto"
 version = "0.0.0"
-source = "git+https://github.com/tikv/client-rust.git?branch=master#1c72722ed50201dacd641e8e4117860844ac58bf"
+source = "git+https://github.com/andylokandy/client-rust.git?branch=master#5dc0e859dc5ec45e9efc82278a45a6fb23210749"
 dependencies = [
  "futures 0.3.8",
  "grpcio",
@@ -1742,7 +1742,7 @@ dependencies = [
 [[package]]
 name = "tikv-client-store"
 version = "0.0.0"
-source = "git+https://github.com/tikv/client-rust.git?branch=master#1c72722ed50201dacd641e8e4117860844ac58bf"
+source = "git+https://github.com/andylokandy/client-rust.git?branch=master#5dc0e859dc5ec45e9efc82278a45a6fb23210749"
 dependencies = [
  "async-trait",
  "derive-new",
