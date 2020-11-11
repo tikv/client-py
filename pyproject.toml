@@ -1,6 +1,5 @@
 [project]
 name = "tikv_client"
-version = "0.1.2"
 description = "TiKV client (Python)"
 readme = "README.md"
 requires-python = ">=3.5"
