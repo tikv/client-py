@@ -19,8 +19,11 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Add MSBuild to PATH
-        if: ${{ matrix.os == 'windows-latest' }}
+        if: runner.os == 'Windows'
         uses: microsoft/setup-msbuild@v1.0.2
+      - name: Install LLVM
+        if: runner.os == 'Windows'
+        run: choco install -y llvm
       # - name: Install gPRC
       #   if: ${{ matrix.os == 'windows-latest' }}
       #   run: vcpkg install grpc:x64-windows
