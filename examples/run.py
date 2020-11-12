@@ -1,6 +1,6 @@
-from tikv_client.transaction import Client
+from tikv_client import TransactionClient
 
-client = Client("127.0.0.1:2379")
+client = TransactionClient("127.0.0.1:2379")
 
 txn = client.begin()
 txn.put(b"k1", b"v1")

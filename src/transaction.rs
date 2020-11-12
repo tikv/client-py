@@ -4,7 +4,6 @@ use std::sync::Arc;
 
 use futures::executor::block_on;
 use pyo3::prelude::*;
-use pyo3::types::*;
 use tikv_client::TimestampExt as _;
 use tokio::sync::RwLock;
 
@@ -12,19 +11,19 @@ use crate::pycoroutine::PyCoroutine;
 use crate::utils::*;
 
 #[pyclass]
-pub struct Client {
+pub struct TransactionClient {
     inner: Arc<tikv_client::TransactionClient>,
 }
 
 #[pymethods]
-impl Client {
+impl TransactionClient {
     #[new]
     pub fn new(pd_endpoint: String) -> PyResult<Self> {
         let client = block_on(tikv_client::TransactionClient::new(
             tikv_client::Config::new(vec![pd_endpoint]),
         ))
         .map_err(to_py_execption)?;
-        Ok(Client {
+        Ok(TransactionClient {
             inner: Arc::new(client),
         })
     }
@@ -118,24 +117,7 @@ impl Snapshot {
     ) -> PyCoroutine {
         let inner = self.inner.clone();
         PyCoroutine::new(async move {
-            let start_bound = if include_start {
-                Bound::Included(start)
-            } else {
-                Bound::Excluded(start)
-            };
-            let end_bound = if let Some(end) = end {
-                if include_end {
-                    Bound::Included(end)
-                } else {
-                    Bound::Excluded(end)
-                }
-            } else {
-                Bound::Unbounded
-            };
-            let range: tikv_client::BoundRange = (start_bound, end_bound)
-                .try_into()
-                .map_err(to_py_execption)?;
-
+            let range = to_bound_range(start, end, include_start, include_end)?;
             let kv_pairs = inner
                 .scan(range, limit, key_only)
                 .await

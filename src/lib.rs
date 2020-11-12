@@ -9,6 +9,7 @@ use pyo3::prelude::*;
 
 #[pymodule]
 fn tikv_client(_py: Python, m: &PyModule) -> PyResult<()> {
-    m.add_class::<transaction::Client>()?;
+    m.add_class::<raw::RawClient>()?;
+    m.add_class::<transaction::TransactionClient>()?;
     Ok(())
 }

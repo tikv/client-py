@@ -1,3 +1,6 @@
+use std::convert::TryInto;
+use std::ops::Bound;
+
 use pyo3::exceptions::PyException;
 use pyo3::prelude::*;
 use pyo3::types::*;
@@ -40,7 +43,7 @@ pub fn from_py_dict(dict: Py<PyDict>) -> PyResult<Vec<tikv_client::KvPair>> {
     })
 }
 
-pub fn to_py_dict(pairs: impl Iterator<Item = tikv_client::KvPair>) -> PyResult<Py<PyDict>> {
+pub fn to_py_dict(pairs: impl IntoIterator<Item = tikv_client::KvPair>) -> PyResult<Py<PyDict>> {
     Python::with_gil(|py| {
         let dict = PyDict::new(py);
         for (key, val) in pairs.into_iter().map(Into::into) {
@@ -50,4 +53,29 @@ pub fn to_py_dict(pairs: impl Iterator<Item = tikv_client::KvPair>) -> PyResult<
         }
         Ok(dict.into())
     })
+}
+
+pub fn to_bound_range(
+    start: Vec<u8>,
+    end: Option<Vec<u8>>,
+    include_start: bool,
+    include_end: bool,
+) -> PyResult<tikv_client::BoundRange> {
+    let start_bound = if include_start {
+        Bound::Included(start)
+    } else {
+        Bound::Excluded(start)
+    };
+    let end_bound = if let Some(end) = end {
+        if include_end {
+            Bound::Included(end)
+        } else {
+            Bound::Excluded(end)
+        }
+    } else {
+        Bound::Unbounded
+    };
+    Ok((start_bound, end_bound)
+        .try_into()
+        .map_err(to_py_execption)?)
 }
