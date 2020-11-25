@@ -1,11 +1,10 @@
 use std::convert::TryInto;
 use std::sync::Arc;
 
-use futures::executor::block_on;
 use pyo3::prelude::*;
 use pyo3::types::*;
 
-use crate::pycoroutine::PyCoroutine;
+use crate::pycoroutine::{PyCoroutine, RUNTIME};
 use crate::utils::*;
 
 #[pyclass]
@@ -17,10 +16,8 @@ pub struct RawClient {
 impl RawClient {
     #[new]
     pub fn new(pd_endpoint: String) -> PyResult<Self> {
-        let client = block_on(tikv_client::RawClient::new(tikv_client::Config::new(vec![
-            pd_endpoint,
-        ])))
-        .map_err(to_py_execption)?;
+        let client =
+            RUNTIME.block_on(tikv_client::RawClient::new(vec![pd_endpoint])).map_err(to_py_execption)?;
         Ok(RawClient {
             inner: Arc::new(client),
         })
@@ -50,13 +47,7 @@ impl RawClient {
         })
     }
 
-    #[args(
-        limit = 1,
-        include_start = "true",
-        include_end = "false",
-        cf = "\"default\"",
-        key_only = "false"
-    )]
+    #[args(include_start = "true", include_end = "false", cf = "\"default\"")]
     pub fn scan(
         &self,
         start: Vec<u8>,
@@ -65,18 +56,35 @@ impl RawClient {
         include_start: bool,
         include_end: bool,
         cf: &str,
-        key_only: bool,
     ) -> PyCoroutine {
         let inner: PyResult<tikv_client::RawClient> =
             try { self.inner.with_cf(cf.try_into().map_err(to_py_execption)?) };
         PyCoroutine::new(async move {
             let range = to_bound_range(start, end, include_start, include_end)?;
-            let kv_pairs = inner?
-                .scan(range, limit, key_only)
+            let kv_pairs = inner?.scan(range, limit).await.map_err(to_py_execption)?;
+            Ok(to_py_dict(kv_pairs)?)
+        })
+    }
+
+    #[args(include_start = "true", include_end = "false", cf = "\"default\"")]
+    pub fn scan_keys(
+        &self,
+        start: Vec<u8>,
+        end: Option<Vec<u8>>,
+        limit: u32,
+        include_start: bool,
+        include_end: bool,
+        cf: &str,
+    ) -> PyCoroutine {
+        let inner: PyResult<tikv_client::RawClient> =
+            try { self.inner.with_cf(cf.try_into().map_err(to_py_execption)?) };
+        PyCoroutine::new(async move {
+            let range = to_bound_range(start, end, include_start, include_end)?;
+            let keys = inner?
+                .scan_keys(range, limit)
                 .await
                 .map_err(to_py_execption)?;
-            let py_dict = to_py_dict(kv_pairs)?;
-            Ok(py_dict)
+            Ok(to_py_key_list(keys.into_iter())?)
         })
     }
 
@@ -121,12 +129,7 @@ impl RawClient {
         })
     }
 
-    #[args(
-        limit = 1,
-        include_start = "true",
-        include_end = "false",
-        cf = "\"default\""
-    )]
+    #[args(include_start = "true", include_end = "false", cf = "\"default\"")]
     pub fn delete_range(
         &self,
         start: Vec<u8>,

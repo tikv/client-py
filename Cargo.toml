@@ -8,9 +8,7 @@ version = "0.1.6"
 futures = "0.3"
 lazy_static = "1"
 pyo3 = { version = "0.12.3", features = ["extension-module"] }
-# tikv-client = { git = "https://github.com/tikv/client-rust.git", branch = "master" }
-tikv-client = { git = "https://github.com/andylokandy/client-rust.git", branch = "master" }
-# tikv-client = { path = "../client-rust" }
+tikv-client = { git = "https://github.com/tikv/client-rust.git", branch = "master" }
 tokio = { version = "0.3", features = ["rt-multi-thread", "sync"] }
 
 [lib]

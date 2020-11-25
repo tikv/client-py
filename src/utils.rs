@@ -28,6 +28,16 @@ pub fn to_py_bytes(bytes: Vec<u8>) -> Py<PyBytes> {
 //     })
 // }
 
+pub fn to_py_key_list(keys: impl Iterator<Item = tikv_client::Key>) -> PyResult<Py<PyList>> {
+    Python::with_gil(|py| {
+        let list = PyList::empty(py);
+        for key in keys {
+            list.append(PyBytes::new(py, (&key).into()))?;
+        }
+        Ok(list.into())
+    })
+}
+
 pub fn from_py_dict(dict: Py<PyDict>) -> PyResult<Vec<tikv_client::KvPair>> {
     Python::with_gil(|py| {
         let mut pairs = Vec::new();

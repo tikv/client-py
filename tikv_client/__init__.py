@@ -14,9 +14,13 @@ class RawClient:
         event_loop = asyncio.get_event_loop()
         return event_loop.run_until_complete(self.inner.batch_get(keys, cf))
 
-    def scan(self, start, end=None, limit=1, include_start=True, include_end=False,  cf="default", key_only=False):
+    def scan(self, start, end, limit, include_start=True, include_end=False, cf="default"):
         event_loop = asyncio.get_event_loop()
-        return event_loop.run_until_complete(self.inner.scan(start, end, limit, include_start, include_end,  cf, key_only))
+        return event_loop.run_until_complete(self.inner.scan(start, end, limit, include_start, include_end, cf))
+   
+    def scan_keys(self, start, end, limit, include_start=True, include_end=False, cf="default"):
+        event_loop = asyncio.get_event_loop()
+        return event_loop.run_until_complete(self.inner.scan_keys(start, end, limit, include_start, include_end, cf))
 
     def put(self, key, value, cf="default"):
         event_loop = asyncio.get_event_loop()
@@ -71,9 +75,13 @@ class Snapshot:
         event_loop = asyncio.get_event_loop()
         return event_loop.run_until_complete(self.inner.batch_get(keys))
 
-    def scan(self, start, end=None, limit=1, include_start=True, include_end=False, key_only=False):
+    def scan(self, start, end, limit, include_start=True, include_end=False):
         event_loop = asyncio.get_event_loop()
-        return event_loop.run_until_complete(self.inner.scan(start, end, limit, include_start, include_end, key_only))
+        return event_loop.run_until_complete(self.inner.scan(start, end, limit, include_start, include_end))
+
+    def scan_keys(self, start, end, limit, include_start=True, include_end=False):
+        event_loop = asyncio.get_event_loop()
+        return event_loop.run_until_complete(self.inner.scan_keys(start, end, limit, include_start, include_end))
 
 
 class Transaction:
@@ -96,9 +104,13 @@ class Transaction:
         event_loop = asyncio.get_event_loop()
         return event_loop.run_until_complete(self.inner.batch_get_for_update(keys))
 
-    def scan(self, start, end=None, limit=1, include_start=True, include_end=False, key_only=False):
+    def scan(self, start, end, limit, include_start=True, include_end=False):
         event_loop = asyncio.get_event_loop()
-        return event_loop.run_until_complete(self.inner.scan(start, end, limit, include_start, include_end, key_only))
+        return event_loop.run_until_complete(self.inner.scan(start, end, limit, include_start, include_end))
+
+    def scan_keys(self, start, end, limit, include_start=True, include_end=False):
+        event_loop = asyncio.get_event_loop()
+        return event_loop.run_until_complete(self.inner.scan_keys(start, end, limit, include_start, include_end))
 
     def lock_keys(self, keys):
         event_loop = asyncio.get_event_loop()

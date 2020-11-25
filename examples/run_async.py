@@ -12,10 +12,10 @@ async def main():
     await txn.put(b"k5", b"v5")
     await txn.commit()
 
-    txn2 = await client.begin()
-    print(await txn2.get(b"k3"))
-    print(await txn2.batch_get([b"k1", b"k4"]))
-    print(await txn2.scan(b"k1", limit=10, include_start=False))
+    snapshot = client.snapshot(await client.current_timestamp())
+    print(await snapshot.get(b"k3"))
+    print(await snapshot.batch_get([b"k1", b"k4"]))
+    print(await snapshot.scan(b"k1", end=None, limit=10, include_start=False))
 
 event_loop = asyncio.get_event_loop()
 asyncio.get_event_loop().run_until_complete(main())
