@@ -1,4 +1,3 @@
-use std::convert::TryInto;
 use std::ops::Bound;
 
 use pyo3::exceptions::PyException;
@@ -66,15 +65,19 @@ pub fn to_py_dict(pairs: impl IntoIterator<Item = tikv_client::KvPair>) -> PyRes
 }
 
 pub fn to_bound_range(
-    start: Vec<u8>,
+    start: Option<Vec<u8>>,
     end: Option<Vec<u8>>,
     include_start: bool,
     include_end: bool,
-) -> PyResult<tikv_client::BoundRange> {
-    let start_bound = if include_start {
-        Bound::Included(start)
+) -> tikv_client::BoundRange {
+    let start_bound = if let Some(start) = start {
+        if include_start {
+            Bound::Included(start)
+        } else {
+            Bound::Excluded(start)
+        }
     } else {
-        Bound::Excluded(start)
+        Bound::Unbounded
     };
     let end_bound = if let Some(end) = end {
         if include_end {
@@ -85,7 +88,5 @@ pub fn to_bound_range(
     } else {
         Bound::Unbounded
     };
-    Ok((start_bound, end_bound)
-        .try_into()
-        .map_err(to_py_execption)?)
+    tikv_client::BoundRange::from((start_bound, end_bound))
 }

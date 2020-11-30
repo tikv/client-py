@@ -16,7 +16,8 @@ pub struct TransactionClient {
 impl TransactionClient {
     #[new]
     pub fn new(pd_endpoint: String) -> PyResult<Self> {
-        let client = RUNTIME.block_on(tikv_client::TransactionClient::new(vec![pd_endpoint]))
+        let client = RUNTIME
+            .block_on(tikv_client::TransactionClient::new(vec![pd_endpoint]))
             .map_err(to_py_execption)?;
         Ok(TransactionClient {
             inner: Arc::new(client),
@@ -98,7 +99,7 @@ impl Snapshot {
     #[args(include_start = "true", include_end = "false")]
     pub fn scan(
         &self,
-        start: Vec<u8>,
+        start: Option<Vec<u8>>,
         end: Option<Vec<u8>>,
         limit: u32,
         include_start: bool,
@@ -106,7 +107,7 @@ impl Snapshot {
     ) -> PyCoroutine {
         let inner = self.inner.clone();
         PyCoroutine::new(async move {
-            let range = to_bound_range(start, end, include_start, include_end)?;
+            let range = to_bound_range(start, end, include_start, include_end);
             let kv_pairs = inner.scan(range, limit).await.map_err(to_py_execption)?;
             let py_dict = to_py_dict(kv_pairs)?;
             Ok(py_dict)
@@ -116,7 +117,7 @@ impl Snapshot {
     #[args(include_start = "true", include_end = "false")]
     pub fn scan_keys(
         &self,
-        start: Vec<u8>,
+        start: Option<Vec<u8>>,
         end: Option<Vec<u8>>,
         limit: u32,
         include_start: bool,
@@ -124,7 +125,7 @@ impl Snapshot {
     ) -> PyCoroutine {
         let inner = self.inner.clone();
         PyCoroutine::new(async move {
-            let range = to_bound_range(start, end, include_start, include_end)?;
+            let range = to_bound_range(start, end, include_start, include_end);
             let keys = inner
                 .scan_keys(range, limit)
                 .await
@@ -198,7 +199,7 @@ impl Transaction {
     #[args(include_start = "true", include_end = "false")]
     pub fn scan(
         &self,
-        start: Vec<u8>,
+        start: Option<Vec<u8>>,
         end: Option<Vec<u8>>,
         limit: u32,
         include_start: bool,
@@ -206,7 +207,7 @@ impl Transaction {
     ) -> PyCoroutine {
         let inner = self.inner.clone();
         PyCoroutine::new(async move {
-            let range = to_bound_range(start, end, include_start, include_end)?;
+            let range = to_bound_range(start, end, include_start, include_end);
             let kv_pairs = inner
                 .read()
                 .await
@@ -220,7 +221,7 @@ impl Transaction {
     #[args(include_start = "true", include_end = "false")]
     pub fn scan_keys(
         &self,
-        start: Vec<u8>,
+        start: Option<Vec<u8>>,
         end: Option<Vec<u8>>,
         limit: u32,
         include_start: bool,
@@ -228,7 +229,7 @@ impl Transaction {
     ) -> PyCoroutine {
         let inner = self.inner.clone();
         PyCoroutine::new(async move {
-            let range = to_bound_range(start, end, include_start, include_end)?;
+            let range = to_bound_range(start, end, include_start, include_end);
             let keys = inner
                 .read()
                 .await
