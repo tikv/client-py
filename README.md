@@ -1,6 +1,6 @@
 # TiKV Client (Python)
 
-![Build and publish](https://github.com/andylokandy/client-py/workflows/Build%20and%20publish/badge.svg)
+![Build and publish](https://github.com/tikv/client-py/workflows/Build%20and%20publish/badge.svg)
 
 This library is a TiKV client in Python; it supports both synchronous and asynchronous API. 
 

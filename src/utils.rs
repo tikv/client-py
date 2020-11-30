@@ -1,3 +1,5 @@
+// Copyright 2020 TiKV Project Authors. Licensed under Apache-2.0.
+
 use std::ops::Bound;
 
 use pyo3::exceptions::PyException;

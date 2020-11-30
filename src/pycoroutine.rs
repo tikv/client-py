@@ -1,3 +1,5 @@
+// Copyright 2020 TiKV Project Authors. Licensed under Apache-2.0.
+
 use lazy_static::lazy_static;
 use pyo3::class::{iter::IterNextOutput, *};
 use pyo3::prelude::*;
