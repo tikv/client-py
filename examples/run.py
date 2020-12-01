@@ -1,8 +1,8 @@
 from tikv_client import TransactionClient
 
-client = TransactionClient("127.0.0.1:2379")
+client = TransactionClient.connect("127.0.0.1:2379")
 
-txn = client.begin()
+txn = client.begin(pessimistic=True)
 txn.put(b"k1", b"v1")
 txn.put(b"k2", b"v2")
 txn.put(b"k3", b"v3")

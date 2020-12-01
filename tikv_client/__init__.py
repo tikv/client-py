@@ -5,8 +5,17 @@ from . import asynchronous
 
 
 class RawClient:
-    def __init__(self, pd_endpoint):
-        self.inner = asynchronous.RawClient(pd_endpoint)
+    def __init__(self):
+        raise Exception("Please use `RawClient.connect()` instead.")
+
+    @classmethod
+    def connect(cls, pd_endpoint):
+        event_loop = asyncio.get_event_loop()
+        inner = event_loop.run_until_complete(
+            asynchronous.RawClient.connect(pd_endpoint))
+        self = cls.__new__(cls)
+        self.inner = inner
+        return self
 
     def get(self, key, cf="default"):
         event_loop = asyncio.get_event_loop()
@@ -46,8 +55,17 @@ class RawClient:
 
 
 class TransactionClient:
-    def __init__(self, pd_endpoint):
-        self.inner = asynchronous.TransactionClient(pd_endpoint)
+    def __init__(self):
+        raise Exception("Please use `TransactionClient.connect()` instead.")
+
+    @classmethod
+    def connect(cls, pd_endpoint):
+        event_loop = asyncio.get_event_loop()
+        inner = event_loop.run_until_complete(
+            asynchronous.TransactionClient.connect(pd_endpoint))
+        self = cls.__new__(cls)
+        self.inner = inner
+        return self
 
     def begin(self, pessimistic=False):
         event_loop = asyncio.get_event_loop()

@@ -1,12 +1,15 @@
 // Copyright 2020 TiKV Project Authors. Licensed under Apache-2.0.
 
+use std::future::Future;
+use std::pin::Pin;
+
+use futures::prelude::*;
 use lazy_static::lazy_static;
 use pyo3::class::{iter::IterNextOutput, *};
+use pyo3::exceptions::PyException;
 use pyo3::prelude::*;
 use tokio::runtime::Runtime;
 use tokio::sync::oneshot::{self, error::TryRecvError};
-
-use std::future::Future;
 
 lazy_static! {
     pub(crate) static ref RUNTIME: Runtime = Runtime::new().unwrap();
@@ -14,6 +17,7 @@ lazy_static! {
 
 #[pyclass]
 pub struct PyCoroutine {
+    task: Option<Pin<Box<dyn Future<Output = ()> + Send + 'static>>>,
     rx: oneshot::Receiver<PyResult<Py<PyAny>>>,
 }
 
@@ -23,19 +27,30 @@ impl PyCoroutine {
     ) -> Self {
         let (tx, rx) = oneshot::channel();
 
-        RUNTIME.spawn(async move {
+        let task = async move {
             let val = task.await;
             let pyval = val.map(|val| Python::with_gil(|py| val.into_py(py)));
             tx.send(pyval).ok();
-        });
+        }
+        .boxed();
 
-        PyCoroutine { rx }
+        PyCoroutine {
+            task: Some(task),
+            rx,
+        }
     }
 }
 
 #[pyproto]
 impl PyAsyncProtocol for PyCoroutine {
-    fn __await__(slf: PyRef<Self>) -> PyRef<Self> {
+    fn __await__(mut slf: PyRefMut<Self>) -> PyRefMut<Self> {
+        if let Some(task) = Option::take(&mut slf.task) {
+            RUNTIME.spawn(task);
+        } else {
+            Python::with_gil(|py| {
+                PyException::new_err("Awaited twice on PyCoroutine.").restore(py)
+            });
+        }
         slf
     }
 }

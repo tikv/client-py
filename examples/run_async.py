@@ -2,9 +2,9 @@ import asyncio
 from tikv_client.asynchronous import TransactionClient
 
 async def main():
-    client = TransactionClient("127.0.0.1:2379")
+    client = await TransactionClient.connect("127.0.0.1:2379")
 
-    txn = await client.begin()
+    txn = await client.begin(pessimistic=True)
     await txn.put(b"k1", b"v1")
     await txn.put(b"k2", b"v2")
     await txn.put(b"k3", b"v3")

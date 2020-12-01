@@ -1,6 +1,6 @@
 # TiKV Client (Python)
 
-![Build and publish](https://github.com/tikv/client-py/workflows/Build%20and%20publish/badge.svg)
+![Publish](https://github.com/tikv/client-py/workflows/Publish/badge.svg)
 
 This library is a TiKV client in Python; it supports both synchronous and asynchronous API. 
 
@@ -12,7 +12,7 @@ This client is still in the stage of prove-of-concept and under heavy developmen
 
 ## Install
 
-The package requires Python 3.5+.
+This package requires Python 3.5+.
 
 ```
 pip3 install -i https://test.pypi.org/simple/ tikv-client
@@ -44,11 +44,11 @@ Successfully installed tikv-client-0.1.0
 Python TiKV client is synchronous by defult:
 
 ```python
-from tikv_client.transaction import Client
+from tikv_client import TransactionClient
 
-client = Client("127.0.0.1:2379")
+client = TransactionClient.connect("127.0.0.1:2379")
 
-txn = client.begin()
+txn = client.begin(pessimistic=True)
 txn.put(b"k1", b"v1")
 txn.put(b"k2", b"v2")
 txn.put(b"k3", b"v3")
@@ -56,22 +56,22 @@ txn.put(b"k4", b"v4")
 txn.put(b"k5", b"v5")
 txn.commit()
 
-txn2 = client.begin()
-print(txn2.get(b"k3"))
-print(txn2.batch_get([b"k1", b"k4"]))
-print(txn2.scan(b"k1", limit=10, include_start=False))
+snapshot = client.snapshot(client.current_timestamp())
+print(snapshot.get(b"k3"))
+print(snapshot.batch_get([b"k1", b"k4"]))
+print(snapshot.scan(b"k1", end=None, limit=10, include_start=False))
 ```
 
 Asynchronous client is available in `tikv_client.asynchronous` module. Modules and classes under this modules is similar to the synchronous ones.
 
 ```python
 import asyncio
-from tikv_client.asynchronous.transaction import Client
+from tikv_client.asynchronous import TransactionClient
 
 async def main():
-    client = Client("127.0.0.1:2379")
+    client = await TransactionClient.connect("127.0.0.1:2379")
 
-    txn = await client.begin()
+    txn = await client.begin(pessimistic=True)
     await txn.put(b"k1", b"v1")
     await txn.put(b"k2", b"v2")
     await txn.put(b"k3", b"v3")
@@ -79,10 +79,10 @@ async def main():
     await txn.put(b"k5", b"v5")
     await txn.commit()
 
-    txn2 = await client.begin()
-    print(await txn2.get(b"k3"))
-    print(await txn2.batch_get([b"k1", b"k4"]))
-    print(await txn2.scan(b"k1", limit=10, include_start=False))
+    snapshot = client.snapshot(await client.current_timestamp())
+    print(await snapshot.get(b"k3"))
+    print(await snapshot.batch_get([b"k1", b"k4"]))
+    print(await snapshot.scan(b"k1", end=None, limit=10, include_start=False))
 
 event_loop = asyncio.get_event_loop()
 asyncio.get_event_loop().run_until_complete(main())
