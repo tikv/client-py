@@ -3,10 +3,11 @@
 use std::convert::TryInto;
 use std::sync::Arc;
 
+use pyo3::exceptions::PyException;
 use pyo3::prelude::*;
 use pyo3::types::*;
 
-use crate::pycoroutine::{PyCoroutine, RUNTIME};
+use crate::pycoroutine::PyCoroutine;
 use crate::utils::*;
 
 #[pyclass]
@@ -17,12 +18,21 @@ pub struct RawClient {
 #[pymethods]
 impl RawClient {
     #[new]
-    pub fn new(pd_endpoint: String) -> PyResult<Self> {
-        let client = RUNTIME
-            .block_on(tikv_client::RawClient::new(vec![pd_endpoint]))
-            .map_err(to_py_execption)?;
-        Ok(RawClient {
-            inner: Arc::new(client),
+    pub fn new() -> PyResult<Self> {
+        Err(PyException::new_err(
+            "Please use `RawClient.connect()` instead.",
+        ))
+    }
+
+    #[classmethod]
+    pub fn connect(_cls: &PyType, pd_endpoint: String) -> PyCoroutine {
+        PyCoroutine::new(async move {
+            let inner = tikv_client::RawClient::new(vec![pd_endpoint])
+                .await
+                .map_err(to_py_execption)?;
+            Ok(RawClient {
+                inner: Arc::new(inner),
+            })
         })
     }
 

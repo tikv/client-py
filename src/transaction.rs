@@ -2,11 +2,13 @@
 
 use std::sync::Arc;
 
+use pyo3::exceptions::PyException;
 use pyo3::prelude::*;
+use pyo3::types::*;
 use tikv_client::TimestampExt as _;
 use tokio::sync::RwLock;
 
-use crate::pycoroutine::{PyCoroutine, RUNTIME};
+use crate::pycoroutine::PyCoroutine;
 use crate::utils::*;
 
 #[pyclass]
@@ -17,12 +19,21 @@ pub struct TransactionClient {
 #[pymethods]
 impl TransactionClient {
     #[new]
-    pub fn new(pd_endpoint: String) -> PyResult<Self> {
-        let client = RUNTIME
-            .block_on(tikv_client::TransactionClient::new(vec![pd_endpoint]))
-            .map_err(to_py_execption)?;
-        Ok(TransactionClient {
-            inner: Arc::new(client),
+    pub fn new() -> PyResult<Self> {
+        Err(PyException::new_err(
+            "Please use `TransactionClient.connect()` instead.",
+        ))
+    }
+
+    #[classmethod]
+    pub fn connect(_cls: &PyType, pd_endpoint: String) -> PyCoroutine {
+        PyCoroutine::new(async move {
+            let inner = tikv_client::TransactionClient::new(vec![pd_endpoint])
+                .await
+                .map_err(to_py_execption)?;
+            Ok(TransactionClient {
+                inner: Arc::new(inner),
+            })
         })
     }
 
