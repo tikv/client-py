@@ -39,6 +39,18 @@ pub fn to_py_key_list(keys: impl Iterator<Item = tikv_client::Key>) -> PyResult<
     })
 }
 
+pub fn to_py_kv_list(pairs: impl IntoIterator<Item = tikv_client::KvPair>) -> PyResult<Py<PyList>> {
+    Python::with_gil(|py| {
+        let list = PyList::empty(py);
+        for (key, val) in pairs.into_iter().map(Into::into) {
+            let key: Py<PyBytes> = PyBytes::new(py, (&key).into()).into();
+            let val: Py<PyBytes> = PyBytes::new(py, &val).into();
+            list.append(PyTuple::new(py, &[key, val]))?;
+        }
+        Ok(list.into())
+    })
+}
+
 pub fn from_py_dict(dict: Py<PyDict>) -> PyResult<Vec<tikv_client::KvPair>> {
     Python::with_gil(|py| {
         let mut pairs = Vec::new();
@@ -51,18 +63,6 @@ pub fn from_py_dict(dict: Py<PyDict>) -> PyResult<Vec<tikv_client::KvPair>> {
             ));
         }
         Ok(pairs)
-    })
-}
-
-pub fn to_py_dict(pairs: impl IntoIterator<Item = tikv_client::KvPair>) -> PyResult<Py<PyDict>> {
-    Python::with_gil(|py| {
-        let dict = PyDict::new(py);
-        for (key, val) in pairs.into_iter().map(Into::into) {
-            let key: Py<PyBytes> = PyBytes::new(py, (&key).into()).into();
-            let val: Py<PyBytes> = PyBytes::new(py, &val).into();
-            dict.set_item(key, val)?;
-        }
-        Ok(dict.into())
     })
 }
 

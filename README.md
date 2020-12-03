@@ -59,7 +59,9 @@ txn.commit()
 snapshot = client.snapshot(client.current_timestamp())
 print(snapshot.get(b"k3"))
 print(snapshot.batch_get([b"k1", b"k4"]))
-print(snapshot.scan(b"k1", end=None, limit=10, include_start=False))
+
+for k, v in snapshot.scan(b"k1", end=None, limit=10, include_start=False):
+    print(k, v)
 ```
 
 Asynchronous client is available in `tikv_client.asynchronous` module. Modules and classes under this modules is similar to the synchronous ones.
@@ -82,7 +84,9 @@ async def main():
     snapshot = client.snapshot(await client.current_timestamp())
     print(await snapshot.get(b"k3"))
     print(await snapshot.batch_get([b"k1", b"k4"]))
-    print(await snapshot.scan(b"k1", end=None, limit=10, include_start=False))
+
+    for k, v in await snapshot.scan(b"k1", end=None, limit=10, include_start=False):
+        print(k, v)
 
 event_loop = asyncio.get_event_loop()
 asyncio.get_event_loop().run_until_complete(main())

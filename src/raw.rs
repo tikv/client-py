@@ -75,7 +75,7 @@ impl RawClient {
         PyCoroutine::new(async move {
             let range = to_bound_range(start, end, include_start, include_end);
             let kv_pairs = inner?.scan(range, limit).await.map_err(to_py_execption)?;
-            Ok(to_py_dict(kv_pairs)?)
+            Ok(to_py_kv_list(kv_pairs)?)
         })
     }
 
