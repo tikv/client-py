@@ -13,4 +13,6 @@ txn.commit()
 snapshot = client.snapshot(client.current_timestamp())
 print(snapshot.get(b"k3"))
 print(snapshot.batch_get([b"k1", b"k4"]))
-print(snapshot.scan(b"k1", end=None, limit=10, include_start=False))
+
+for k, v in snapshot.scan(b"k1", end=None, limit=10, include_start=False):
+    print(k, v)
