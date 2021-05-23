@@ -41,7 +41,7 @@ Successfully installed tikv-client-0.1.0
 
 ## Example
 
-Python TiKV client is synchronous by defult:
+Python TiKV client is synchronous by default:
 
 ```python
 from tikv_client import TransactionClient
