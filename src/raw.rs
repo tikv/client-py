@@ -55,8 +55,8 @@ impl RawClient {
         let inner: PyResult<tikv_client::RawClient> =
             try { self.inner.with_cf(cf.try_into().map_err(to_py_execption)?) };
         PyCoroutine::new(async move {
-            inner?.batch_get(keys).await.map_err(to_py_execption)?;
-            Ok(())
+            let kvpairs = inner?.batch_get(keys).await.map_err(to_py_execption)?;
+            Ok(to_py_kv_list(kvpairs)?)
         })
     }
 
