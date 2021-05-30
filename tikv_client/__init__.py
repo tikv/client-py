@@ -78,8 +78,8 @@ class TransactionClient:
         return event_loop.run_until_complete(
             self.inner.current_timestamp())
 
-    def snapshot(self, timestamp):
-        snapshot = self.inner.snapshot(timestamp)
+    def snapshot(self, timestamp, pessimistic):
+        snapshot = self.inner.snapshot(timestamp, pessimistic)
         return Snapshot(snapshot)
 
 
