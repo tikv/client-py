@@ -105,6 +105,19 @@ impl Snapshot {
         })
     }
 
+    pub fn key_exists(&self, key: Vec<u8>) -> PyCoroutine {
+        let inner = self.inner.clone();
+        PyCoroutine::new(async move {
+            let val = inner
+                .write()
+                .await
+                .key_exists(key)
+                .await
+                .map_err(to_py_execption)?;
+            Ok(val)
+        })
+    }
+
     pub fn batch_get(&self, keys: Vec<Vec<u8>>) -> PyCoroutine {
         let inner = self.inner.clone();
         PyCoroutine::new(async move {
@@ -186,6 +199,19 @@ impl Transaction {
                 .await
                 .map_err(to_py_execption)?
                 .map(to_py_bytes);
+            Ok(val)
+        })
+    }
+
+    pub fn key_exists(&self, key: Vec<u8>) -> PyCoroutine {
+        let inner = self.inner.clone();
+        PyCoroutine::new(async move {
+            let val = inner
+                .write()
+                .await
+                .key_exists(key)
+                .await
+                .map_err(to_py_execption)?;
             Ok(val)
         })
     }
@@ -280,6 +306,19 @@ impl Transaction {
                 .write()
                 .await
                 .put(key, value)
+                .await
+                .map_err(to_py_execption)?;
+            Ok(())
+        })
+    }
+
+    pub fn insert(&self, key: Vec<u8>, value: Vec<u8>) -> PyCoroutine {
+        let inner = self.inner.clone();
+        PyCoroutine::new(async move {
+            inner
+                .write()
+                .await
+                .insert(key, value)
                 .await
                 .map_err(to_py_execption)?;
             Ok(())
