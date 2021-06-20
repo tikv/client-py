@@ -91,6 +91,10 @@ class Snapshot:
         event_loop = asyncio.get_event_loop()
         return event_loop.run_until_complete(self.inner.get(key))
 
+    def key_exists(self, key):
+        event_loop = asyncio.get_event_loop()
+        return event_loop.run_until_complete(self.inner.key_exists(key))
+
     def batch_get(self, keys):
         event_loop = asyncio.get_event_loop()
         return event_loop.run_until_complete(self.inner.batch_get(keys))
@@ -116,6 +120,10 @@ class Transaction:
         event_loop = asyncio.get_event_loop()
         return event_loop.run_until_complete(self.inner.get_for_update(key))
 
+    def key_exists(self, key):
+        event_loop = asyncio.get_event_loop()
+        return event_loop.run_until_complete(self.inner.key_exists(key))
+
     def batch_get(self, keys):
         event_loop = asyncio.get_event_loop()
         return event_loop.run_until_complete(self.inner.batch_get(keys))
@@ -139,6 +147,10 @@ class Transaction:
     def put(self, key, value):
         event_loop = asyncio.get_event_loop()
         event_loop.run_until_complete(self.inner.put(key, value))
+
+    def insert(self, key, value):
+        event_loop = asyncio.get_event_loop()
+        event_loop.run_until_complete(self.inner.insert(key, value))
 
     def delete(self, key):
         event_loop = asyncio.get_event_loop()
