@@ -7,7 +7,7 @@ use pyo3::prelude::*;
 use pyo3::types::*;
 use tikv_client::TimestampExt as _;
 use tikv_client::TransactionOptions;
-use tokio::sync::RwLock;
+use tokio::sync::Mutex;
 
 use crate::pycoroutine::PyCoroutine;
 use crate::utils::*;
@@ -48,7 +48,7 @@ impl TransactionClient {
                 inner.begin_optimistic().await.map_err(to_py_execption)?
             };
             Ok(Transaction {
-                inner: Arc::new(RwLock::new(transaction)),
+                inner: Arc::new(Mutex::new(transaction)),
             })
         })
     }
@@ -64,11 +64,14 @@ impl TransactionClient {
     #[args(pessimistic = "false")]
     pub fn snapshot(&self, timestamp: u64, pessimistic: bool) -> Snapshot {
         Snapshot {
-            inner: Arc::new(
-                RwLock::new(
-                self.inner
-                    .snapshot(tikv_client::Timestamp::from_version(timestamp), if pessimistic { TransactionOptions::new_pessimistic() } else { TransactionOptions::new_optimistic() }),
-            )),
+            inner: Arc::new(Mutex::new(self.inner.snapshot(
+                tikv_client::Timestamp::from_version(timestamp),
+                if pessimistic {
+                    TransactionOptions::new_pessimistic()
+                } else {
+                    TransactionOptions::new_optimistic()
+                },
+            ))),
         }
     }
 
@@ -86,7 +89,7 @@ impl TransactionClient {
 
 #[pyclass]
 pub struct Snapshot {
-    inner: Arc<RwLock<tikv_client::Snapshot>>,
+    inner: Arc<Mutex<tikv_client::Snapshot>>,
 }
 
 #[pymethods]
@@ -95,7 +98,7 @@ impl Snapshot {
         let inner = self.inner.clone();
         PyCoroutine::new(async move {
             let val = inner
-                .write()
+                .lock()
                 .await
                 .get(key)
                 .await
@@ -108,7 +111,12 @@ impl Snapshot {
     pub fn batch_get(&self, keys: Vec<Vec<u8>>) -> PyCoroutine {
         let inner = self.inner.clone();
         PyCoroutine::new(async move {
-            let kv_pairs = inner.write().await.batch_get(keys).await.map_err(to_py_execption)?;
+            let kv_pairs = inner
+                .lock()
+                .await
+                .batch_get(keys)
+                .await
+                .map_err(to_py_execption)?;
             let py_dict = to_py_kv_list(kv_pairs)?;
             Ok(py_dict)
         })
@@ -126,7 +134,12 @@ impl Snapshot {
         let inner = self.inner.clone();
         PyCoroutine::new(async move {
             let range = to_bound_range(start, end, include_start, include_end);
-            let kv_pairs = inner.write().await.scan(range, limit).await.map_err(to_py_execption)?;
+            let kv_pairs = inner
+                .lock()
+                .await
+                .scan(range, limit)
+                .await
+                .map_err(to_py_execption)?;
             let py_dict = to_py_kv_list(kv_pairs)?;
             Ok(py_dict)
         })
@@ -145,7 +158,7 @@ impl Snapshot {
         PyCoroutine::new(async move {
             let range = to_bound_range(start, end, include_start, include_end);
             let keys = inner
-                .write()
+                .lock()
                 .await
                 .scan_keys(range, limit)
                 .await
@@ -157,7 +170,7 @@ impl Snapshot {
 
 #[pyclass]
 pub struct Transaction {
-    inner: Arc<RwLock<tikv_client::Transaction>>,
+    inner: Arc<Mutex<tikv_client::Transaction>>,
 }
 
 #[pymethods]
@@ -166,7 +179,7 @@ impl Transaction {
         let inner = self.inner.clone();
         PyCoroutine::new(async move {
             let val = inner
-                .write()
+                .lock()
                 .await
                 .get(key)
                 .await
@@ -180,7 +193,7 @@ impl Transaction {
         let inner = self.inner.clone();
         PyCoroutine::new(async move {
             let val = inner
-                .write()
+                .lock()
                 .await
                 .get_for_update(key)
                 .await
@@ -194,7 +207,7 @@ impl Transaction {
         let inner = self.inner.clone();
         PyCoroutine::new(async move {
             let kv_pairs = inner
-                .write()
+                .lock()
                 .await
                 .batch_get(keys)
                 .await
@@ -207,7 +220,7 @@ impl Transaction {
         let inner = self.inner.clone();
         PyCoroutine::new(async move {
             let kv_pairs = inner
-                .write()
+                .lock()
                 .await
                 .batch_get_for_update(keys)
                 .await
@@ -229,7 +242,7 @@ impl Transaction {
         PyCoroutine::new(async move {
             let range = to_bound_range(start, end, include_start, include_end);
             let kv_pairs = inner
-                .write()
+                .lock()
                 .await
                 .scan(range, limit)
                 .await
@@ -251,7 +264,7 @@ impl Transaction {
         PyCoroutine::new(async move {
             let range = to_bound_range(start, end, include_start, include_end);
             let keys = inner
-                .write()
+                .lock()
                 .await
                 .scan_keys(range, limit)
                 .await
@@ -264,7 +277,7 @@ impl Transaction {
         let inner = self.inner.clone();
         PyCoroutine::new(async move {
             inner
-                .write()
+                .lock()
                 .await
                 .lock_keys(keys)
                 .await
@@ -277,7 +290,7 @@ impl Transaction {
         let inner = self.inner.clone();
         PyCoroutine::new(async move {
             inner
-                .write()
+                .lock()
                 .await
                 .put(key, value)
                 .await
@@ -290,7 +303,7 @@ impl Transaction {
         let inner = self.inner.clone();
         PyCoroutine::new(async move {
             inner
-                .write()
+                .lock()
                 .await
                 .delete(key)
                 .await
@@ -301,8 +314,14 @@ impl Transaction {
 
     fn commit(&self) -> PyCoroutine {
         let inner = self.inner.clone();
-        PyCoroutine::new(async move { 
-            let timestamp = inner.write().await.commit().await.map_err(to_py_execption)?.map(|v| v.version());
+        PyCoroutine::new(async move {
+            let timestamp = inner
+                .lock()
+                .await
+                .commit()
+                .await
+                .map_err(to_py_execption)?
+                .map(|v| v.version());
             Ok(timestamp)
         })
     }

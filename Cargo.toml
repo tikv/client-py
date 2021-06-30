@@ -7,9 +7,9 @@ version = "0.1.8"
 [dependencies]
 futures = "0.3"
 lazy_static = "1"
-pyo3 = { version = "0.12.3", features = ["extension-module"] }
-tikv-client = { git = "https://github.com/tikv/client-rust.git", branch = "master" }
-tokio = { version = "0.3", features = ["rt-multi-thread", "sync"] }
+pyo3 = { version="0.13.2", features=["extension-module"] }
+tikv-client = { git="https://github.com/tikv/client-rust.git", branch="master" }
+tokio = { version="1.7.1", features=["rt-multi-thread", "sync"] }
 
 [lib]
 crate-type = ["cdylib"]
