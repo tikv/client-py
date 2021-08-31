@@ -1,6 +1,6 @@
 [project]
 name = "tikv_client"
-description = "TiKV client (Python)"
+description = "TiKV Client for Python"
 readme = "README.md"
 requires-python = ">=3.5"
 license = { file = "LICENSE" }
