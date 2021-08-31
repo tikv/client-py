@@ -7,7 +7,7 @@ version = "0.0.0"
 [dependencies]
 futures = "0.3"
 lazy_static = "1"
-pyo3 = { version = "0.12.3", features = ["extension-module"] }
+pyo3 = { version = "0.12.3", features = ["abi3-py36", "extension-module"] }
 tikv-client = { git = "https://github.com/tikv/client-rust.git", branch = "master" }
 tokio = { version = "0.3", features = ["rt-multi-thread", "sync"] }
 

@@ -12,7 +12,7 @@ This client is still in the stage of prove-of-concept and under heavy developmen
 
 ## Install
 
-This package requires Python 3.5+.
+This package requires Python 3.6+.
 
 ```
 pip3 install tikv-client
