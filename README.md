@@ -2,11 +2,11 @@
 
 ![Publish](https://github.com/tikv/client-py/workflows/Publish/badge.svg)
 
-This library is a TiKV client in Python; it supports both synchronous and asynchronous API. 
+This library is a TiKV client in Python; it supports both synchronous and asynchronous API.
 
-It's built on top of 
-[TiKV Client in Rust](https://github.com/tikv/client-rust) via 
-CFFI and [PyO3 Python binding](https://github.com/PyO3/pyo3). 
+It's built on top of
+[TiKV Client in Rust](https://github.com/tikv/client-rust) via
+CFFI and [PyO3 Python binding](https://github.com/PyO3/pyo3).
 
 This client is still in the stage of prove-of-concept and under heavy development.
 
@@ -15,7 +15,7 @@ This client is still in the stage of prove-of-concept and under heavy developmen
 This package requires Python 3.5+.
 
 ```
-pip3 install -i https://test.pypi.org/simple/ tikv-client
+pip3 install tikv-client
 ```
 
 ## Install (Development)

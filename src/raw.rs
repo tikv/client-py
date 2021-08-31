@@ -56,7 +56,7 @@ impl RawClient {
             try { self.inner.with_cf(cf.try_into().map_err(to_py_execption)?) };
         PyCoroutine::new(async move {
             let kvpairs = inner?.batch_get(keys).await.map_err(to_py_execption)?;
-            Ok(to_py_kv_list(kvpairs)?)
+            to_py_kv_list(kvpairs)
         })
     }
 
@@ -75,7 +75,7 @@ impl RawClient {
         PyCoroutine::new(async move {
             let range = to_bound_range(start, end, include_start, include_end);
             let kv_pairs = inner?.scan(range, limit).await.map_err(to_py_execption)?;
-            Ok(to_py_kv_list(kv_pairs)?)
+            to_py_kv_list(kv_pairs)
         })
     }
 
@@ -97,7 +97,7 @@ impl RawClient {
                 .scan_keys(range, limit)
                 .await
                 .map_err(to_py_execption)?;
-            Ok(to_py_key_list(keys.into_iter())?)
+            to_py_key_list(keys.into_iter())
         })
     }
 

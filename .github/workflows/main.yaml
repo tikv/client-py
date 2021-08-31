@@ -42,4 +42,4 @@ jobs:
       #     maturin build --interpreter python${{ matrix.python-version }}
       - name: Build and publish package to PyPi
         run: |
-          maturin publish --no-sdist --interpreter python --repository-url https://test.pypi.org/legacy/ -u ${{ secrets.PYPI_USERNAME }} -p ${{ secrets.PYPI_PASSWORD }}
+          maturin publish --no-sdist --interpreter python -u ${{ secrets.PYPI_USERNAME }} -p ${{ secrets.PYPI_PASSWORD }}

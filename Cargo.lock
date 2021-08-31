@@ -1683,6 +1683,17 @@ dependencies = [
 [[package]]
 name = "tikv-client"
 version = "0.0.0"
+dependencies = [
+ "futures 0.3.8",
+ "lazy_static",
+ "pyo3",
+ "tikv-client 0.0.0 (git+https://github.com/tikv/client-rust.git?branch=master)",
+ "tokio 0.3.4",
+]
+
+[[package]]
+name = "tikv-client"
+version = "0.0.0"
 source = "git+https://github.com/tikv/client-rust.git?branch=master#70dd5580f1226c35108e1a47a2975911ec0e9ee6"
 dependencies = [
  "async-trait",
@@ -1704,17 +1715,6 @@ dependencies = [
  "tikv-client-proto",
  "tikv-client-store",
  "tokio 0.2.23",
-]
-
-[[package]]
-name = "tikv-client"
-version = "0.1.9"
-dependencies = [
- "futures 0.3.8",
- "lazy_static",
- "pyo3",
- "tikv-client 0.0.0",
- "tokio 0.3.4",
 ]
 
 [[package]]
