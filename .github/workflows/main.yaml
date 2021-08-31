@@ -90,7 +90,7 @@ jobs:
       with:
         rust-toolchain: nightly
         target: ${{ matrix.target }}
-        manylinux: "2014/2_17"
+        manylinux: "2014"
         args: --release --out dist --no-sdist
     - name: Install built wheel
       if: matrix.target == 'x86_64'
