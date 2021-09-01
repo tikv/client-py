@@ -26,7 +26,8 @@ jobs:
           args: --release --out dist --no-sdist
       - name: Install built wheel - x86_64
         run: |
-          pip install tikv_client --no-index --find-links dist --force-reinstall
+          cd dist
+          pip install tikv_client --no-index --find-links . --force-reinstall
           python -c "import tikv_client"
       - name: Build wheels - universal2
         uses: messense/maturin-action@v1
@@ -34,7 +35,8 @@ jobs:
           args: --release --universal2 --out dist --no-sdist
       - name: Install built wheel - universal2
         run: |
-          pip install tikv_client --no-index --find-links dist --force-reinstall
+          cd dist
+          pip install tikv_client --no-index --find-links . --force-reinstall
           python -c "import tikv_client"
       - name: Upload wheels
         uses: actions/upload-artifact@v2
@@ -66,7 +68,8 @@ jobs:
           args: --release --out dist --no-sdist
       - name: Install built wheel
         run: |
-          pip install tikv_client --no-index --find-links dist --force-reinstall
+          cd dist
+          pip install tikv_client --no-index --find-links . --force-reinstall
           python -c "import tikv_client"
       - name: Upload wheels
         uses: actions/upload-artifact@v2
@@ -95,7 +98,8 @@ jobs:
     - name: Install built wheel
       if: matrix.target == 'x86_64'
       run: |
-        pip install tikv_client --no-index --find-links dist --force-reinstall
+        cd dist
+        pip install tikv_client --no-index --find-links . --force-reinstall
         python -c "import tikv_client"
     - name: Upload wheels
       uses: actions/upload-artifact@v2
