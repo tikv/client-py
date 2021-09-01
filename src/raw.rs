@@ -27,7 +27,7 @@ impl RawClient {
     #[classmethod]
     pub fn connect(_cls: &PyType, pd_endpoint: String) -> PyCoroutine {
         PyCoroutine::new(async move {
-            let inner = tikv_client::RawClient::new(vec![pd_endpoint])
+            let inner = tikv_client::RawClient::new(vec![pd_endpoint], None)
                 .await
                 .map_err(to_py_execption)?;
             Ok(RawClient {

@@ -29,7 +29,7 @@ impl TransactionClient {
     #[classmethod]
     pub fn connect(_cls: &PyType, pd_endpoint: String) -> PyCoroutine {
         PyCoroutine::new(async move {
-            let inner = tikv_client::TransactionClient::new(vec![pd_endpoint])
+            let inner = tikv_client::TransactionClient::new(vec![pd_endpoint], None)
                 .await
                 .map_err(to_py_execption)?;
             Ok(TransactionClient {
@@ -64,11 +64,14 @@ impl TransactionClient {
     #[args(pessimistic = "false")]
     pub fn snapshot(&self, timestamp: u64, pessimistic: bool) -> Snapshot {
         Snapshot {
-            inner: Arc::new(
-                RwLock::new(
-                self.inner
-                    .snapshot(tikv_client::Timestamp::from_version(timestamp), if pessimistic { TransactionOptions::new_pessimistic() } else { TransactionOptions::new_optimistic() }),
-            )),
+            inner: Arc::new(RwLock::new(self.inner.snapshot(
+                tikv_client::Timestamp::from_version(timestamp),
+                if pessimistic {
+                    TransactionOptions::new_pessimistic()
+                } else {
+                    TransactionOptions::new_optimistic()
+                },
+            ))),
         }
     }
 
@@ -121,7 +124,12 @@ impl Snapshot {
     pub fn batch_get(&self, keys: Vec<Vec<u8>>) -> PyCoroutine {
         let inner = self.inner.clone();
         PyCoroutine::new(async move {
-            let kv_pairs = inner.write().await.batch_get(keys).await.map_err(to_py_execption)?;
+            let kv_pairs = inner
+                .write()
+                .await
+                .batch_get(keys)
+                .await
+                .map_err(to_py_execption)?;
             let py_dict = to_py_kv_list(kv_pairs)?;
             Ok(py_dict)
         })
@@ -139,7 +147,12 @@ impl Snapshot {
         let inner = self.inner.clone();
         PyCoroutine::new(async move {
             let range = to_bound_range(start, end, include_start, include_end);
-            let kv_pairs = inner.write().await.scan(range, limit).await.map_err(to_py_execption)?;
+            let kv_pairs = inner
+                .write()
+                .await
+                .scan(range, limit)
+                .await
+                .map_err(to_py_execption)?;
             let py_dict = to_py_kv_list(kv_pairs)?;
             Ok(py_dict)
         })
@@ -340,8 +353,14 @@ impl Transaction {
 
     fn commit(&self) -> PyCoroutine {
         let inner = self.inner.clone();
-        PyCoroutine::new(async move { 
-            let timestamp = inner.write().await.commit().await.map_err(to_py_execption)?.map(|v| v.version());
+        PyCoroutine::new(async move {
+            let timestamp = inner
+                .write()
+                .await
+                .commit()
+                .await
+                .map_err(to_py_execption)?
+                .map(|v| v.version());
             Ok(timestamp)
         })
     }
