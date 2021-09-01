@@ -51,6 +51,10 @@ jobs:
         target: [x64, x86]
     steps:
       - uses: actions/checkout@v2
+      - name: Add MSBuild to PATH
+        uses: microsoft/setup-msbuild@v1.0.2
+      - name: Install LLVM
+        run: choco install -y llvm
       - uses: actions/setup-python@v2
         with:
           python-version: 3.9
