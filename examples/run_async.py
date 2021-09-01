@@ -12,7 +12,7 @@ async def main():
     await txn.put(b"k5", b"v5")
     await txn.commit()
 
-    snapshot = client.snapshot(await client.current_timestamp())
+    snapshot = client.snapshot(await client.current_timestamp(), pessimistic=True)
     print(await snapshot.get(b"k3"))
     print(await snapshot.batch_get([b"k1", b"k4"]))
 

@@ -10,7 +10,7 @@ txn.put(b"k4", b"v4")
 txn.put(b"k5", b"v5")
 txn.commit()
 
-snapshot = client.snapshot(client.current_timestamp())
+snapshot = client.snapshot(client.current_timestamp(), pessimistic=True)
 print(snapshot.get(b"k3"))
 print(snapshot.batch_get([b"k1", b"k4"]))
 

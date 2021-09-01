@@ -51,14 +51,14 @@ jobs:
         target: [x64, x86]
     steps:
       - uses: actions/checkout@v2
-      - name: Add MSBuild to PATH
-        uses: microsoft/setup-msbuild@v1.0.2
-      - name: Install LLVM
-        run: choco install -y llvm
       - uses: actions/setup-python@v2
         with:
           python-version: 3.9
           architecture: ${{ matrix.target }}
+      - name: Add MSBuild to PATH
+        uses: microsoft/setup-msbuild@v1.0.2
+      - name: Install LLVM
+        run: choco install -y llvm
       - name: Install Rust toolchain
         uses: actions-rs/toolchain@v1
         with:
@@ -97,7 +97,7 @@ jobs:
       with:
         rust-toolchain: nightly
         target: ${{ matrix.target }}
-        manylinux: "off"
+        manylinux: "2014"
         args: --release --out dist --no-sdist
     - name: Install built wheel
       if: matrix.target == 'x86_64'
@@ -144,7 +144,8 @@ jobs:
   #         pip3 install -U pip
   #       run: |
   #         ls -lrth /artifacts
-  #         pip3 install tikv_client --no-index --find-links /artifacts --force-reinstall
+  #         cd /artifacts
+  #         pip3 install tikv_client --no-index --find-links . --force-reinstall
   #         python3 -c "import tikv_client"
   #   - name: Upload wheels
   #     uses: actions/upload-artifact@v2
