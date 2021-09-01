@@ -176,7 +176,7 @@ impl Snapshot {
                 .scan_keys(range, limit)
                 .await
                 .map_err(to_py_execption)?;
-            Ok(to_py_key_list(keys)?)
+            to_py_key_list(keys)
         })
     }
 }
@@ -238,7 +238,7 @@ impl Transaction {
                 .batch_get(keys)
                 .await
                 .map_err(to_py_execption)?;
-            Ok(to_py_kv_list(kv_pairs)?)
+            to_py_kv_list(kv_pairs)
         })
     }
 
@@ -251,7 +251,7 @@ impl Transaction {
                 .batch_get_for_update(keys)
                 .await
                 .map_err(to_py_execption)?;
-            Ok(to_py_kv_list(kv_pairs)?)
+            to_py_kv_list(kv_pairs)
         })
     }
 
@@ -273,7 +273,7 @@ impl Transaction {
                 .scan(range, limit)
                 .await
                 .map_err(to_py_execption)?;
-            Ok(to_py_kv_list(kv_pairs)?)
+            to_py_kv_list(kv_pairs)
         })
     }
 
@@ -295,7 +295,7 @@ impl Transaction {
                 .scan_keys(range, limit)
                 .await
                 .map_err(to_py_execption)?;
-            Ok(to_py_key_list(keys)?)
+            to_py_key_list(keys)
         })
     }
 

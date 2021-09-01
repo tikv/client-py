@@ -1594,8 +1594,19 @@ dependencies = [
 
 [[package]]
 name = "tikv-client"
+version = "0.0.0"
+dependencies = [
+ "futures 0.3.17",
+ "lazy_static",
+ "pyo3",
+ "tikv-client 0.1.0",
+ "tokio 0.3.7",
+]
+
+[[package]]
+name = "tikv-client"
 version = "0.1.0"
-source = "git+https://github.com/andylokandy/client-rust.git?branch=ssl#e15555ef689c29db0cc00730792b4e210bd76a90"
+source = "git+https://github.com/andylokandy/client-rust.git?branch=ssl#24dc19d9ecdefe506596a9bff03089599bd9d7b0"
 dependencies = [
  "async-recursion",
  "async-trait",
@@ -1624,20 +1635,9 @@ dependencies = [
 ]
 
 [[package]]
-name = "tikv-client"
-version = "0.1.8"
-dependencies = [
- "futures 0.3.17",
- "lazy_static",
- "pyo3",
- "tikv-client 0.1.0",
- "tokio 0.3.7",
-]
-
-[[package]]
 name = "tikv-client-common"
 version = "0.1.0"
-source = "git+https://github.com/andylokandy/client-rust.git?branch=ssl#e15555ef689c29db0cc00730792b4e210bd76a90"
+source = "git+https://github.com/andylokandy/client-rust.git?branch=ssl#24dc19d9ecdefe506596a9bff03089599bd9d7b0"
 dependencies = [
  "futures 0.3.17",
  "grpcio",
@@ -1653,7 +1653,7 @@ dependencies = [
 [[package]]
 name = "tikv-client-pd"
 version = "0.1.0"
-source = "git+https://github.com/andylokandy/client-rust.git?branch=ssl#e15555ef689c29db0cc00730792b4e210bd76a90"
+source = "git+https://github.com/andylokandy/client-rust.git?branch=ssl#24dc19d9ecdefe506596a9bff03089599bd9d7b0"
 dependencies = [
  "async-trait",
  "futures 0.3.17",
@@ -1666,7 +1666,7 @@ dependencies = [
 [[package]]
 name = "tikv-client-proto"
 version = "0.1.0"
-source = "git+https://github.com/andylokandy/client-rust.git?branch=ssl#e15555ef689c29db0cc00730792b4e210bd76a90"
+source = "git+https://github.com/andylokandy/client-rust.git?branch=ssl#24dc19d9ecdefe506596a9bff03089599bd9d7b0"
 dependencies = [
  "futures 0.3.17",
  "grpcio",
@@ -1680,7 +1680,7 @@ dependencies = [
 [[package]]
 name = "tikv-client-store"
 version = "0.1.0"
-source = "git+https://github.com/andylokandy/client-rust.git?branch=ssl#e15555ef689c29db0cc00730792b4e210bd76a90"
+source = "git+https://github.com/andylokandy/client-rust.git?branch=ssl#24dc19d9ecdefe506596a9bff03089599bd9d7b0"
 dependencies = [
  "async-trait",
  "derive-new",
