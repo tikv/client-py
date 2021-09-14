@@ -2,14 +2,20 @@
 authors = ["Andy Lok <andylokandy@hotmail.com>"]
 edition = "2018"
 name = "tikv-client"
-version = "0.0.0"
+version = "0.0.1"
 
 [dependencies]
 futures = "0.3"
-lazy_static = "1"
 pyo3 = { version = "0.14.4", features = ["abi3-py36", "extension-module"] }
-tikv-client = { git = "https://github.com/andylokandy/client-rust.git", branch = "ssl" }
-tokio = { version = "0.3", features = ["rt-multi-thread", "sync"] }
+pyo3-asyncio = { version = "0.14", features = ["attributes", "tokio-runtime"] }
+tikv-client = { git = "https://github.com/tikv/client-rust.git", branch = "master" }
+tokio = { version = "1", features = ["sync"] }
+
+# This is a workaround for building the client in manylinux container. These dependencies
+# are not directly used by this crate but the cargo will add the following features to the
+# indirected dependencies in order to vender the OpenSSL.
+reqwest = { version = "0.11", default-features = false, features = ["native-tls-vendored"] }
+grpcio = { git = "https://github.com/tikv/grpc-rs.git", branch = "master", features = ["openssl-vendored"], default-features = false }
 
 [lib]
 crate-type = ["cdylib"]

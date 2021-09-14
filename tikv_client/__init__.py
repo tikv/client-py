@@ -28,7 +28,7 @@ class RawClient:
     def scan(self, start, end, limit, include_start=True, include_end=False, cf="default"):
         event_loop = asyncio.get_event_loop()
         return event_loop.run_until_complete(self.inner.scan(start, end, limit, include_start, include_end, cf))
-   
+
     def scan_keys(self, start, end, limit, include_start=True, include_end=False, cf="default"):
         event_loop = asyncio.get_event_loop()
         return event_loop.run_until_complete(self.inner.scan_keys(start, end, limit, include_start, include_end, cf))

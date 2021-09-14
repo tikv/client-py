@@ -29,7 +29,7 @@ pub fn to_py_bytes(bytes: Vec<u8>) -> Py<PyBytes> {
 //     })
 // }
 
-pub fn to_py_key_list(keys: impl Iterator<Item = tikv_client::Key>) -> PyResult<Py<PyList>> {
+pub fn to_py_key_list(keys: impl IntoIterator<Item = tikv_client::Key>) -> PyResult<Py<PyList>> {
     Python::with_gil(|py| {
         let list = PyList::empty(py);
         for key in keys {

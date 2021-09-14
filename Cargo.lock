@@ -200,6 +200,16 @@ dependencies = [
 ]
 
 [[package]]
+name = "ctor"
+version = "0.1.21"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "ccc0a48a9b826acdf4028595adc9db92caea352f7af011a3034acd172a52a0aa"
+dependencies = [
+ "quote",
+ "syn",
+]
+
+[[package]]
 name = "derive-new"
 version = "0.5.9"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -437,6 +447,17 @@ dependencies = [
 ]
 
 [[package]]
+name = "ghost"
+version = "0.1.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "1a5bcf1bbeab73aa4cf2fde60a846858dc036163c7c33bec309f8d17de785479"
+dependencies = [
+ "proc-macro2",
+ "quote",
+ "syn",
+]
+
+[[package]]
 name = "glob"
 version = "0.3.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -445,15 +466,28 @@ checksum = "9b919933a397b79c37e33b77bb2aa3dc8eb6e165ad809e58ff75bc7db2e34574"
 [[package]]
 name = "grpcio"
 version = "0.9.0"
-source = "git+https://github.com/tikv/grpc-rs.git?branch=master#69abb443856640bf58572a2301ba6f9280b78204"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "2a1b8dd4e79b81ccfd5b9282dfc6d3d4e97568291c383c1bc98756a0f21e39d9"
 dependencies = [
  "bytes",
  "futures 0.3.17",
- "grpcio-sys",
+ "grpcio-sys 0.9.0+1.38.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "libc",
  "log",
  "parking_lot",
  "prost",
+]
+
+[[package]]
+name = "grpcio"
+version = "0.9.0"
+source = "git+https://github.com/tikv/grpc-rs.git?branch=master#69abb443856640bf58572a2301ba6f9280b78204"
+dependencies = [
+ "futures 0.3.17",
+ "grpcio-sys 0.9.0+1.38.0 (git+https://github.com/tikv/grpc-rs.git?branch=master)",
+ "libc",
+ "log",
+ "parking_lot",
 ]
 
 [[package]]
@@ -472,9 +506,25 @@ dependencies = [
 [[package]]
 name = "grpcio-sys"
 version = "0.9.0+1.38.0"
-source = "git+https://github.com/tikv/grpc-rs.git?branch=master#69abb443856640bf58572a2301ba6f9280b78204"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "0cdbbb3010823156c3153b75db391c0f47beeec57353a33dfa38126b265cc1d5"
 dependencies = [
  "bindgen",
+ "boringssl-src",
+ "cc",
+ "cmake",
+ "libc",
+ "libz-sys",
+ "openssl-sys",
+ "pkg-config",
+ "walkdir",
+]
+
+[[package]]
+name = "grpcio-sys"
+version = "0.9.0+1.38.0"
+source = "git+https://github.com/tikv/grpc-rs.git?branch=master#69abb443856640bf58572a2301ba6f9280b78204"
+dependencies = [
  "boringssl-src",
  "cc",
  "cmake",
@@ -499,7 +549,7 @@ dependencies = [
  "http",
  "indexmap",
  "slab",
- "tokio 1.11.0",
+ "tokio",
  "tokio-util",
  "tracing",
 ]
@@ -586,7 +636,7 @@ dependencies = [
  "itoa",
  "pin-project-lite",
  "socket2",
- "tokio 1.11.0",
+ "tokio",
  "tower-service",
  "tracing",
  "want",
@@ -601,7 +651,7 @@ dependencies = [
  "bytes",
  "hyper",
  "native-tls",
- "tokio 1.11.0",
+ "tokio",
  "tokio-native-tls",
 ]
 
@@ -656,6 +706,28 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "bee0328b1209d157ef001c94dd85b4f8f64139adb0eac2659f4b08382b2f474d"
 dependencies = [
  "cfg-if",
+]
+
+[[package]]
+name = "inventory"
+version = "0.1.10"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "0f0f7efb804ec95e33db9ad49e4252f049e37e8b0a4652e3cd61f7999f2eff7f"
+dependencies = [
+ "ctor",
+ "ghost",
+ "inventory-impl",
+]
+
+[[package]]
+name = "inventory-impl"
+version = "0.1.10"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "75c094e94816723ab936484666968f5b58060492e880f3c8d00489a1e244fa51"
+dependencies = [
+ "proc-macro2",
+ "quote",
+ "syn",
 ]
 
 [[package]]
@@ -1039,9 +1111,9 @@ dependencies = [
 
 [[package]]
 name = "procfs"
-version = "0.10.1"
+version = "0.9.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "95e344cafeaeefe487300c361654bcfc85db3ac53619eeccced29f5ea18c4c70"
+checksum = "ab8809e0c18450a2db0f236d2a44ec0b4c1412d0eb936233579f0990faa5d5cd"
 dependencies = [
  "bitflags",
  "byteorder",
@@ -1054,7 +1126,8 @@ dependencies = [
 [[package]]
 name = "prometheus"
 version = "0.12.0"
-source = "git+https://github.com/andylokandy/rust-prometheus.git?branch=master#04db4df027e8dc8d7a598646505932e2a16981ab"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "5986aa8d62380092d2f50f8b1cdba9cb9b6731ffd4b25b51fd126b6c3e05b99c"
 dependencies = [
  "cfg-if",
  "fnv",
@@ -1153,6 +1226,31 @@ dependencies = [
  "pyo3-build-config",
  "pyo3-macros",
  "unindent",
+]
+
+[[package]]
+name = "pyo3-asyncio"
+version = "0.14.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "08097b330a06c83c704112fde04d27dda074818451809a4384b2a66c6d51d7b9"
+dependencies = [
+ "futures 0.3.17",
+ "inventory",
+ "once_cell",
+ "pyo3",
+ "pyo3-asyncio-macros",
+ "tokio",
+]
+
+[[package]]
+name = "pyo3-asyncio-macros"
+version = "0.14.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "d3be08f3da9195947db0b6b64a9a5e91da602444c76f96ed32748d1ef1a89961"
+dependencies = [
+ "proc-macro2",
+ "quote",
+ "syn",
 ]
 
 [[package]]
@@ -1347,7 +1445,7 @@ dependencies = [
  "pin-project-lite",
  "serde",
  "serde_urlencoded",
- "tokio 1.11.0",
+ "tokio",
  "tokio-native-tls",
  "url",
  "wasm-bindgen",
@@ -1487,6 +1585,15 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "7fdf1b9db47230893d76faad238fd6097fd6d6a9245cd7a4d90dbd639536bbd2"
 
 [[package]]
+name = "signal-hook-registry"
+version = "1.4.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "e51e73328dc4ac0c7ccbda3a494dfa03df1de2f46018127f60c693f2648455b0"
+dependencies = [
+ "libc",
+]
+
+[[package]]
 name = "slab"
 version = "0.4.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1594,19 +1701,21 @@ dependencies = [
 
 [[package]]
 name = "tikv-client"
-version = "0.0.0"
+version = "0.0.1"
 dependencies = [
  "futures 0.3.17",
- "lazy_static",
+ "grpcio 0.9.0 (git+https://github.com/tikv/grpc-rs.git?branch=master)",
  "pyo3",
+ "pyo3-asyncio",
+ "reqwest",
  "tikv-client 0.1.0",
- "tokio 0.3.7",
+ "tokio",
 ]
 
 [[package]]
 name = "tikv-client"
 version = "0.1.0"
-source = "git+https://github.com/andylokandy/client-rust.git?branch=ssl#24dc19d9ecdefe506596a9bff03089599bd9d7b0"
+source = "git+https://github.com/tikv/client-rust.git?branch=master#eb1d2da05cc857818e078bc3d91ce50343031642"
 dependencies = [
  "async-recursion",
  "async-trait",
@@ -1615,7 +1724,7 @@ dependencies = [
  "fail",
  "futures 0.3.17",
  "futures-timer",
- "grpcio",
+ "grpcio 0.9.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "lazy_static",
  "log",
  "prometheus",
@@ -1631,33 +1740,33 @@ dependencies = [
  "tikv-client-pd",
  "tikv-client-proto",
  "tikv-client-store",
- "tokio 1.11.0",
+ "tokio",
 ]
 
 [[package]]
 name = "tikv-client-common"
 version = "0.1.0"
-source = "git+https://github.com/andylokandy/client-rust.git?branch=ssl#24dc19d9ecdefe506596a9bff03089599bd9d7b0"
+source = "git+https://github.com/tikv/client-rust.git?branch=master#eb1d2da05cc857818e078bc3d91ce50343031642"
 dependencies = [
  "futures 0.3.17",
- "grpcio",
+ "grpcio 0.9.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "lazy_static",
  "log",
  "regex",
  "semver",
  "thiserror",
  "tikv-client-proto",
- "tokio 1.11.0",
+ "tokio",
 ]
 
 [[package]]
 name = "tikv-client-pd"
 version = "0.1.0"
-source = "git+https://github.com/andylokandy/client-rust.git?branch=ssl#24dc19d9ecdefe506596a9bff03089599bd9d7b0"
+source = "git+https://github.com/tikv/client-rust.git?branch=master#eb1d2da05cc857818e078bc3d91ce50343031642"
 dependencies = [
  "async-trait",
  "futures 0.3.17",
- "grpcio",
+ "grpcio 0.9.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "log",
  "tikv-client-common",
  "tikv-client-proto",
@@ -1666,10 +1775,10 @@ dependencies = [
 [[package]]
 name = "tikv-client-proto"
 version = "0.1.0"
-source = "git+https://github.com/andylokandy/client-rust.git?branch=ssl#24dc19d9ecdefe506596a9bff03089599bd9d7b0"
+source = "git+https://github.com/tikv/client-rust.git?branch=master#eb1d2da05cc857818e078bc3d91ce50343031642"
 dependencies = [
  "futures 0.3.17",
- "grpcio",
+ "grpcio 0.9.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "lazy_static",
  "prost",
  "prost-derive",
@@ -1680,12 +1789,12 @@ dependencies = [
 [[package]]
 name = "tikv-client-store"
 version = "0.1.0"
-source = "git+https://github.com/andylokandy/client-rust.git?branch=ssl#24dc19d9ecdefe506596a9bff03089599bd9d7b0"
+source = "git+https://github.com/tikv/client-rust.git?branch=master#eb1d2da05cc857818e078bc3d91ce50343031642"
 dependencies = [
  "async-trait",
  "derive-new",
  "futures 0.3.17",
- "grpcio",
+ "grpcio 0.9.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "log",
  "tikv-client-common",
  "tikv-client-proto",
@@ -1718,18 +1827,6 @@ checksum = "cda74da7e1a664f795bb1f8a87ec406fb89a02522cf6e50620d016add6dbbf5c"
 
 [[package]]
 name = "tokio"
-version = "0.3.7"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "46409491c9375a693ce7032101970a54f8a2010efb77e13f70788f0d84489e39"
-dependencies = [
- "autocfg",
- "num_cpus",
- "pin-project-lite",
- "slab",
-]
-
-[[package]]
-name = "tokio"
 version = "1.11.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "b4efe6fc2395938c8155973d7be49fe8d03a843726e285e100a8a383cc0154ce"
@@ -1740,7 +1837,10 @@ dependencies = [
  "memchr",
  "mio",
  "num_cpus",
+ "once_cell",
+ "parking_lot",
  "pin-project-lite",
+ "signal-hook-registry",
  "tokio-macros",
  "winapi",
 ]
@@ -1763,7 +1863,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "f7d995660bd2b7f8c1568414c1126076c13fbb725c40112dc0120b78eb9b717b"
 dependencies = [
  "native-tls",
- "tokio 1.11.0",
+ "tokio",
 ]
 
 [[package]]
@@ -1777,7 +1877,7 @@ dependencies = [
  "futures-sink",
  "log",
  "pin-project-lite",
- "tokio 1.11.0",
+ "tokio",
 ]
 
 [[package]]
