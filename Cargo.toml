@@ -15,7 +15,7 @@ tokio = { version = "1", features = ["sync"] }
 # are not directly used by this crate but the cargo will add the following features to the
 # indirected dependencies in order to vender the OpenSSL.
 reqwest = { version = "0.11", default-features = false, features = ["native-tls-vendored"] }
-grpcio = { git = "https://github.com/tikv/grpc-rs.git", branch = "master", features = ["openssl-vendored"], default-features = false }
+# grpcio = { version = "0.9", features = ["openssl-vendored"], default-features = false }
 
 [lib]
 crate-type = ["cdylib"]

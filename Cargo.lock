@@ -471,23 +471,11 @@ checksum = "2a1b8dd4e79b81ccfd5b9282dfc6d3d4e97568291c383c1bc98756a0f21e39d9"
 dependencies = [
  "bytes",
  "futures 0.3.17",
- "grpcio-sys 0.9.0+1.38.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "grpcio-sys",
  "libc",
  "log",
  "parking_lot",
  "prost",
-]
-
-[[package]]
-name = "grpcio"
-version = "0.9.0"
-source = "git+https://github.com/tikv/grpc-rs.git?branch=master#69abb443856640bf58572a2301ba6f9280b78204"
-dependencies = [
- "futures 0.3.17",
- "grpcio-sys 0.9.0+1.38.0 (git+https://github.com/tikv/grpc-rs.git?branch=master)",
- "libc",
- "log",
- "parking_lot",
 ]
 
 [[package]]
@@ -510,21 +498,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "0cdbbb3010823156c3153b75db391c0f47beeec57353a33dfa38126b265cc1d5"
 dependencies = [
  "bindgen",
- "boringssl-src",
- "cc",
- "cmake",
- "libc",
- "libz-sys",
- "openssl-sys",
- "pkg-config",
- "walkdir",
-]
-
-[[package]]
-name = "grpcio-sys"
-version = "0.9.0+1.38.0"
-source = "git+https://github.com/tikv/grpc-rs.git?branch=master#69abb443856640bf58572a2301ba6f9280b78204"
-dependencies = [
  "boringssl-src",
  "cc",
  "cmake",
@@ -1704,7 +1677,6 @@ name = "tikv-client"
 version = "0.0.1"
 dependencies = [
  "futures 0.3.17",
- "grpcio 0.9.0 (git+https://github.com/tikv/grpc-rs.git?branch=master)",
  "pyo3",
  "pyo3-asyncio",
  "reqwest",
@@ -1724,7 +1696,7 @@ dependencies = [
  "fail",
  "futures 0.3.17",
  "futures-timer",
- "grpcio 0.9.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "grpcio",
  "lazy_static",
  "log",
  "prometheus",
@@ -1749,7 +1721,7 @@ version = "0.1.0"
 source = "git+https://github.com/tikv/client-rust.git?branch=master#eb1d2da05cc857818e078bc3d91ce50343031642"
 dependencies = [
  "futures 0.3.17",
- "grpcio 0.9.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "grpcio",
  "lazy_static",
  "log",
  "regex",
@@ -1766,7 +1738,7 @@ source = "git+https://github.com/tikv/client-rust.git?branch=master#eb1d2da05cc8
 dependencies = [
  "async-trait",
  "futures 0.3.17",
- "grpcio 0.9.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "grpcio",
  "log",
  "tikv-client-common",
  "tikv-client-proto",
@@ -1778,7 +1750,7 @@ version = "0.1.0"
 source = "git+https://github.com/tikv/client-rust.git?branch=master#eb1d2da05cc857818e078bc3d91ce50343031642"
 dependencies = [
  "futures 0.3.17",
- "grpcio 0.9.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "grpcio",
  "lazy_static",
  "prost",
  "prost-derive",
@@ -1794,7 +1766,7 @@ dependencies = [
  "async-trait",
  "derive-new",
  "futures 0.3.17",
- "grpcio 0.9.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "grpcio",
  "log",
  "tikv-client-common",
  "tikv-client-proto",

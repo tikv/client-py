@@ -16,7 +16,7 @@ jobs:
       - name: Install Rust toolchain
         uses: actions-rs/toolchain@v1
         with:
-          toolchain: nightly
+          toolchain: nightly-2021-08-21
           profile: minimal
           default: true
       - name: Build wheels - x86_64
@@ -62,7 +62,7 @@ jobs:
       - name: Install Rust toolchain
         uses: actions-rs/toolchain@v1
         with:
-          toolchain: nightly
+          toolchain: nightly-2021-08-21
           profile: minimal
           default: true
       - name: Build wheels
@@ -95,7 +95,7 @@ jobs:
     - name: Build Wheels
       uses: messense/maturin-action@v1
       with:
-        rust-toolchain: nightly
+        rust-toolchain: nightly-2021-08-21
         target: ${{ matrix.target }}
         manylinux: "2014"
         args: --release --out dist --no-sdist
