@@ -12,7 +12,7 @@ This client is still in the stage of prove-of-concept and under heavy developmen
 
 ## Install
 
-This package requires Python 3.6+.
+This package requires Python 3.6+ and pip 19+. Currently only supports MacOS (x86_64 and aarch64) and Linux in x86_64 with GLibc >= 2.12.
 
 ```
 pip3 install tikv-client
