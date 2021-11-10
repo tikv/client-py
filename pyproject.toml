@@ -15,3 +15,9 @@ maintainers = [
 [build-system]
 requires = ["maturin>=0.11,<0.12"]
 build-backend = "maturin"
+
+[project.optional-dependencies]
+tests = [
+  'pytest',
+  'pytest-asyncio>=0.16.0',
+]

@@ -38,6 +38,10 @@ jobs:
           cd dist
           pip install tikv_client --no-index --find-links . --force-reinstall
           python -c "import tikv_client"
+      - name: Test
+        run: |
+          pip install pytest pytest-asyncio
+          pytest tests
       - name: Upload wheels
         uses: actions/upload-artifact@v2
         with:
@@ -105,6 +109,10 @@ jobs:
         cd dist
         pip install tikv_client --no-index --find-links . --force-reinstall
         python -c "import tikv_client"
+    - name: Test
+      run: |
+        pip install pytest pytest-asyncio
+        pytest tests
     - name: Upload wheels
       uses: actions/upload-artifact@v2
       with:
