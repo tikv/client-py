@@ -388,13 +388,13 @@ impl Transaction {
     fn rollback<'p>(&self, py: Python<'p>) -> PyResult<&'p PyAny> {
         let inner = self.inner.clone();
         future_into_py(py, async move {
-            let timestamp = inner
+            inner
                 .write()
                 .await
                 .rollback()
                 .await
                 .map_err(to_py_execption)?;
-            Ok(Python::with_gil(|py| timestamp.to_object(py)))
+            Ok(Python::with_gil(|py| py.None()))
         })
     }
 }
