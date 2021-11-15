@@ -3,6 +3,4 @@
 __pycache__/
 .vscode
 .python-version
-pd-server
-tikv-server
 dist
