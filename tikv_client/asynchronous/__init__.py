@@ -8,8 +8,10 @@ class RawClient:
         raise Exception("Please use `RawClient.connect()` instead.")
 
     @classmethod
-    async def connect(cls, pd_endpoint):
-        inner = await tikv_client.RawClient.connect(pd_endpoint)
+    async def connect(cls, pd_endpoints):
+        if not isinstance(pd_endpoints, list):
+            raise Exception("Please use list as pd_endpoints. For example: `RawClient.connect([127.0.0.1:2379])`.")
+        inner = await tikv_client.RawClient.connect(pd_endpoints)
         self = cls.__new__(cls)
         self.inner = inner
         return self
@@ -47,8 +49,10 @@ class TransactionClient:
         raise Exception("Please use `TransactionClient.connect()` instead.")
 
     @classmethod
-    async def connect(cls, pd_endpoint):
-        inner = await tikv_client.TransactionClient.connect(pd_endpoint)
+    async def connect(cls, pd_endpoints):
+        if not isinstance(pd_endpoints, list):
+            raise Exception("Please use list as pd_endpoints. For example: `TransactionClient.connect([127.0.0.1:2379])`.")
+        inner = await tikv_client.TransactionClient.connect(pd_endpoints)
         self = cls.__new__(cls)
         self.inner = inner
         return self
