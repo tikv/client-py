@@ -2,7 +2,7 @@
 authors = ["Andy Lok <andylokandy@hotmail.com>"]
 edition = "2018"
 name = "tikv-client"
-version = "0.0.2"
+version = "0.0.3"
 
 [dependencies]
 futures = "0.3"

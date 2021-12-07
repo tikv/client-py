@@ -159,3 +159,7 @@ class Transaction:
     def commit(self):
         event_loop = asyncio.get_event_loop()
         event_loop.run_until_complete(self.inner.commit())
+
+    def rollback(self):
+        event_loop = asyncio.get_event_loop()
+        event_loop.run_until_complete(self.inner.rollback())

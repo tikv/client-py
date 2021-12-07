@@ -2,7 +2,6 @@
 
 use std::sync::Arc;
 
-use pyo3::exceptions::PyException;
 use pyo3::prelude::*;
 use pyo3::types::*;
 use pyo3::ToPyObject;
@@ -20,13 +19,6 @@ pub struct TransactionClient {
 
 #[pymethods]
 impl TransactionClient {
-    #[new]
-    pub fn new() -> PyResult<Self> {
-        Err(PyException::new_err(
-            "Please use `TransactionClient.connect()` instead.",
-        ))
-    }
-
     #[classmethod]
     pub fn connect<'p>(_cls: &PyType, py: Python<'p>, pd_endpoint: String) -> PyResult<&'p PyAny> {
         future_into_py(py, async move {
