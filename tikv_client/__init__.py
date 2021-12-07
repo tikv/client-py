@@ -39,7 +39,7 @@ class RawClient:
 
     def batch_put(self, pairs, cf="default"):
         event_loop = asyncio.get_event_loop()
-        event_loop.run_until_complete(self.inner.put(pairs, cf))
+        event_loop.run_until_complete(self.inner.batch_put(pairs, cf))
 
     def delete(self, key, cf="default"):
         event_loop = asyncio.get_event_loop()

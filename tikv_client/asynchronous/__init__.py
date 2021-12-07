@@ -30,7 +30,7 @@ class RawClient:
         await self.inner.put(key, value, cf)
 
     async def batch_put(self, pairs, cf="default"):
-        await self.inner.put(pairs, cf)
+        await self.inner.batch_put(pairs, cf)
 
     async def delete(self, key, cf="default"):
         await self.inner.delete(key, cf)
