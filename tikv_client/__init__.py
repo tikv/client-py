@@ -9,10 +9,10 @@ class RawClient:
         raise Exception("Please use `RawClient.connect()` instead.")
 
     @classmethod
-    def connect(cls, pd_endpoint):
+    def connect(cls, pd_endpoints):
         event_loop = asyncio.get_event_loop()
         inner = event_loop.run_until_complete(
-            asynchronous.RawClient.connect(pd_endpoint))
+            asynchronous.RawClient.connect(pd_endpoints))
         self = cls.__new__(cls)
         self.inner = inner
         return self
@@ -39,7 +39,7 @@ class RawClient:
 
     def batch_put(self, pairs, cf="default"):
         event_loop = asyncio.get_event_loop()
-        event_loop.run_until_complete(self.inner.put(pairs, cf))
+        event_loop.run_until_complete(self.inner.batch_put(pairs, cf))
 
     def delete(self, key, cf="default"):
         event_loop = asyncio.get_event_loop()
@@ -59,10 +59,10 @@ class TransactionClient:
         raise Exception("Please use `TransactionClient.connect()` instead.")
 
     @classmethod
-    def connect(cls, pd_endpoint):
+    def connect(cls, pd_endpoints):
         event_loop = asyncio.get_event_loop()
         inner = event_loop.run_until_complete(
-            asynchronous.TransactionClient.connect(pd_endpoint))
+            asynchronous.TransactionClient.connect(pd_endpoints))
         self = cls.__new__(cls)
         self.inner = inner
         return self
@@ -159,3 +159,7 @@ class Transaction:
     def commit(self):
         event_loop = asyncio.get_event_loop()
         event_loop.run_until_complete(self.inner.commit())
+
+    def rollback(self):
+        event_loop = asyncio.get_event_loop()
+        event_loop.run_until_complete(self.inner.rollback())
