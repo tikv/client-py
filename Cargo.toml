@@ -8,7 +8,7 @@ version = "0.0.3"
 futures = "0.3"
 pyo3 = { version = "0.14.4", features = ["abi3-py36", "extension-module"] }
 pyo3-asyncio = { version = "0.14", features = ["attributes", "tokio-runtime"] }
-tikv-client = { git = "https://github.com/tikv/client-rust.git", branch = "master" }
+tikv-client = { git = "https://github.com/andylokandy/client-rust.git", branch = "master" }
 tokio = { version = "1", features = ["sync"] }
 
 # This is a workaround for building the client in manylinux container. These dependencies

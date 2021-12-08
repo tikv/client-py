@@ -25,6 +25,10 @@ class RawClient:
         event_loop = asyncio.get_event_loop()
         return event_loop.run_until_complete(self.inner.batch_get(keys, cf))
 
+    def get_key_ttl_secs(self, key, cf="default"):
+        event_loop = asyncio.get_event_loop()
+        return event_loop.run_until_complete(self.inner.get_key_ttl_secs(key, cf))
+
     def scan(self, start, end, limit, include_start=True, include_end=False, cf="default"):
         event_loop = asyncio.get_event_loop()
         return event_loop.run_until_complete(self.inner.scan(start, end, limit, include_start, include_end, cf))
@@ -33,13 +37,17 @@ class RawClient:
         event_loop = asyncio.get_event_loop()
         return event_loop.run_until_complete(self.inner.scan_keys(start, end, limit, include_start, include_end, cf))
 
-    def put(self, key, value, cf="default"):
+    def put(self, key, value, ttl_secs=0, cf="default"):
         event_loop = asyncio.get_event_loop()
-        event_loop.run_until_complete(self.inner.put(key, value, cf))
+        event_loop.run_until_complete(self.inner.put(key, value, ttl_secs, cf))
 
     def batch_put(self, pairs, cf="default"):
         event_loop = asyncio.get_event_loop()
         event_loop.run_until_complete(self.inner.batch_put(pairs, cf))
+
+    def batch_put_with_ttl(self, pairs_with_ttls_secs, cf="default"):
+        event_loop = asyncio.get_event_loop()
+        event_loop.run_until_complete(self.inner.batch_put_with_ttl(pairs_with_ttls_secs, cf))
 
     def delete(self, key, cf="default"):
         event_loop = asyncio.get_event_loop()

@@ -22,17 +22,23 @@ class RawClient:
     async def batch_get(self, keys, cf="default"):
         return await self.inner.batch_get(keys, cf)
 
+    async def get_key_ttl_secs(self, key, cf="default"):
+        return await self.inner.get_key_ttl_secs(key, cf)
+
     async def scan(self, start, end, limit, include_start=True, include_end=False, cf="default"):
         return await self.inner.scan(start, end, limit, include_start, include_end, cf)
 
     async def scan_keys(self, start, end, limit, include_start=True, include_end=False, cf="default"):
         return await self.inner.scan_keys(start, end, limit, include_start, include_end, cf)
 
-    async def put(self, key, value, cf="default"):
-        await self.inner.put(key, value, cf)
+    async def put(self, key, value, ttl_secs=0, cf="default"):
+        await self.inner.put(key, value, ttl_secs, cf)
 
     async def batch_put(self, pairs, cf="default"):
         await self.inner.batch_put(pairs, cf)
+
+    async def batch_put_with_ttl(self, pairs_with_ttls_secs, cf="default"):
+        await self.inner.batch_put_with_ttl(pairs_with_ttls_secs, cf)
 
     async def delete(self, key, cf="default"):
         await self.inner.delete(key, cf)
