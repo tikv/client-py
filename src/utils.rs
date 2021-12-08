@@ -10,24 +10,13 @@ pub fn to_py_execption(err: impl std::fmt::Display) -> PyErr {
     PyException::new_err(format!("{}", err))
 }
 
-// pub fn from_py_bytes(bytes: Py<PyBytes>) -> Vec<u8> {
-//     Python::with_gil(|py| bytes.as_ref(py).as_bytes().to_vec())
-// }
-
 pub fn to_py_bytes(bytes: Vec<u8>) -> Py<PyBytes> {
     Python::with_gil(|py| PyBytes::new(py, &bytes).into())
 }
 
-// pub fn from_py_key_list(list: Py<PyList>) -> PyResult<Vec<tikv_client::Key>> {
-//     Python::with_gil(|py| {
-//         let mut results = Vec::new();
-//         for item in list.as_ref(py) {
-//             let bytes = item.downcast::<PyBytes>()?;
-//             results.push(bytes.as_bytes().to_vec().into());
-//         }
-//         Ok(results)
-//     })
-// }
+pub fn to_py_int(num: u64) -> Py<PyAny> {
+    Python::with_gil(|py| num.to_object(py))
+}
 
 pub fn to_py_key_list(keys: impl IntoIterator<Item = tikv_client::Key>) -> PyResult<Py<PyList>> {
     Python::with_gil(|py| {
@@ -54,13 +43,22 @@ pub fn to_py_kv_list(pairs: impl IntoIterator<Item = tikv_client::KvPair>) -> Py
 pub fn from_py_dict(dict: Py<PyDict>) -> PyResult<Vec<tikv_client::KvPair>> {
     Python::with_gil(|py| {
         let mut pairs = Vec::new();
-        for (key, val) in dict.as_ref(py).into_iter() {
-            let key = key.downcast::<PyBytes>()?;
-            let val = val.downcast::<PyBytes>()?;
-            pairs.push(tikv_client::KvPair::new(
-                key.as_bytes().to_owned(),
-                val.as_bytes().to_owned(),
-            ));
+        for (key, value) in dict.as_ref(py).into_iter() {
+            let key: Vec<u8> = key.extract()?;
+            let value: Vec<u8> = value.extract()?;
+            pairs.push(tikv_client::KvPair::new(key, value));
+        }
+        Ok(pairs)
+    })
+}
+
+pub fn from_py_dict_with_ttl(dict: Py<PyDict>) -> PyResult<Vec<(tikv_client::KvPair, u64)>> {
+    Python::with_gil(|py| {
+        let mut pairs = Vec::new();
+        for (key, tuple) in dict.as_ref(py).into_iter() {
+            let key: Vec<u8> = key.extract()?;
+            let (value, ttl): (Vec<u8>, u64) = tuple.extract()?;
+            pairs.push((tikv_client::KvPair::new(key, value), ttl));
         }
         Ok(pairs)
     })

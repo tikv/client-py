@@ -34,7 +34,6 @@ impl RawClient {
         })
     }
 
-    #[args(cf = "\"default\"")]
     pub fn get<'p>(&self, py: Python<'p>, key: Vec<u8>, cf: &str) -> PyResult<&'p PyAny> {
         let inner: PyResult<tikv_client::RawClient> =
             try { self.inner.with_cf(cf.try_into().map_err(to_py_execption)?) };
@@ -48,7 +47,6 @@ impl RawClient {
         })
     }
 
-    #[args(cf = "\"default\"")]
     pub fn batch_get<'p>(
         &self,
         py: Python<'p>,
@@ -64,7 +62,24 @@ impl RawClient {
         })
     }
 
-    #[args(include_start = "true", include_end = "false", cf = "\"default\"")]
+    pub fn get_key_ttl_secs<'p>(
+        &self,
+        py: Python<'p>,
+        key: Vec<u8>,
+        cf: &str,
+    ) -> PyResult<&'p PyAny> {
+        let inner: PyResult<tikv_client::RawClient> =
+            try { self.inner.with_cf(cf.try_into().map_err(to_py_execption)?) };
+        future_into_py(py, async move {
+            let ttl: Option<Py<PyAny>> = inner?
+                .get_key_ttl_secs(key)
+                .await
+                .map_err(to_py_execption)?
+                .map(to_py_int);
+            Ok(Python::with_gil(|py| ttl.to_object(py)))
+        })
+    }
+
     pub fn scan<'p>(
         &self,
         py: Python<'p>,
@@ -85,7 +100,6 @@ impl RawClient {
         })
     }
 
-    #[args(include_start = "true", include_end = "false", cf = "\"default\"")]
     pub fn scan_keys<'p>(
         &self,
         py: Python<'p>,
@@ -109,23 +123,25 @@ impl RawClient {
         })
     }
 
-    #[args(cf = "\"default\"")]
     pub fn put<'p>(
         &self,
         py: Python<'p>,
         key: Vec<u8>,
         value: Vec<u8>,
+        ttl_secs: u64,
         cf: &str,
     ) -> PyResult<&'p PyAny> {
         let inner: PyResult<tikv_client::RawClient> =
             try { self.inner.with_cf(cf.try_into().map_err(to_py_execption)?) };
         future_into_py(py, async move {
-            inner?.put(key, value).await.map_err(to_py_execption)?;
+            inner?
+                .put_with_ttl(key, value, ttl_secs)
+                .await
+                .map_err(to_py_execption)?;
             Ok(Python::with_gil(|py| py.None()))
         })
     }
 
-    #[args(cf = "\"default\"")]
     pub fn batch_put<'p>(
         &self,
         py: Python<'p>,
@@ -141,7 +157,24 @@ impl RawClient {
         })
     }
 
-    #[args(cf = "\"default\"")]
+    pub fn batch_put_with_ttl<'p>(
+        &self,
+        py: Python<'p>,
+        pairs_with_ttls_secs: Py<PyDict>,
+        cf: &str,
+    ) -> PyResult<&'p PyAny> {
+        let inner: PyResult<tikv_client::RawClient> =
+            try { self.inner.with_cf(cf.try_into().map_err(to_py_execption)?) };
+        future_into_py(py, async move {
+            let pairs_with_ttls_secs = from_py_dict_with_ttl(pairs_with_ttls_secs)?;
+            inner?
+                .batch_put_with_ttl(pairs_with_ttls_secs)
+                .await
+                .map_err(to_py_execption)?;
+            Ok(Python::with_gil(|py| py.None()))
+        })
+    }
+
     pub fn delete<'p>(&self, py: Python<'p>, key: Vec<u8>, cf: &str) -> PyResult<&'p PyAny> {
         let inner: PyResult<tikv_client::RawClient> =
             try { self.inner.with_cf(cf.try_into().map_err(to_py_execption)?) };
@@ -151,7 +184,6 @@ impl RawClient {
         })
     }
 
-    #[args(cf = "\"default\"")]
     pub fn batch_delete<'p>(
         &self,
         py: Python<'p>,
@@ -166,7 +198,6 @@ impl RawClient {
         })
     }
 
-    #[args(include_start = "true", include_end = "false", cf = "\"default\"")]
     pub fn delete_range<'p>(
         &self,
         py: Python<'p>,
