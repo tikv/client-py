@@ -5,11 +5,10 @@ name = "tikv-client"
 version = "0.0.3"
 
 [dependencies]
-async-std = "1.12"
 pyo3 = { version = "0.19", features = ["extension-module"] }
 pyo3-asyncio = { version = "0.19", features = ["tokio-runtime", "attributes"] }
-tikv-client = "0.2"
-tokio = { version = "1", features = ["sync"] }
+tikv-client = { git = "https://github.com/tikv/client-rust.git", rev = "b12f95e3b2723ed677f10694021545837d746aed" }
+tokio = { version = "1", features = ["sync", "rt"] }
 
 [target.'cfg(target_os = "linux")'.dependencies]
 openssl = { version = "0.10.57", features = ["vendored"] }
