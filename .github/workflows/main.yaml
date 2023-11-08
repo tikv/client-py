@@ -30,7 +30,13 @@ jobs:
         run: |
           cd dist
           pip install tikv_client --no-index --find-links . --force-reinstall
-          python -c "import tikv_client"
+      - name: Install test packages
+        run: |
+          ./tests/run-tikv.sh
+          pip install pytest pytest-asyncio
+      - name: Run tests - x86_64
+        run: |
+          pytest -sv tests
       - name: Build wheels - universal2
         uses: messense/maturin-action@v1
         with:
@@ -41,6 +47,9 @@ jobs:
           cd dist
           pip install tikv_client --no-index --find-links . --force-reinstall
           python -c "import tikv_client"
+      - name: Run tests - universal2
+        run: |
+          pytest -sv tests
       - name: Upload wheels
         uses: actions/upload-artifact@v2
         with:
@@ -131,6 +140,13 @@ jobs:
           cd dist
           pip install tikv_client --no-index --find-links . --force-reinstall
           python -c "import tikv_client"
+      - name: Install test packages
+        run: |
+          ./tests/run-tikv.sh
+          pip install pytest pytest-asyncio
+      - name: Run tests - linux
+        run: |
+          pytest -sv tests
       - name: Upload wheels
         uses: actions/upload-artifact@v2
         with:
