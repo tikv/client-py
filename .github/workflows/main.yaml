@@ -11,19 +11,21 @@ jobs:
       - uses: actions/checkout@v2
       - uses: actions/setup-python@v2
         with:
-          python-version: 3.9
+          python-version: 3.11
           architecture: x64
       - name: Install Rust toolchain
         uses: actions-rs/toolchain@v1
         with:
-          toolchain: nightly-2021-08-21
+          toolchain: nightly-2023-10-24
           profile: minimal
           default: true
+      - name: Install protoc
+        run: brew install protobuf
       - name: Build wheels - x86_64
         uses: messense/maturin-action@v1
         with:
           target: x86_64
-          args: --release --out dist --no-sdist
+          args: --release --out dist
       - name: Install built wheel - x86_64
         run: |
           cd dist
@@ -32,7 +34,8 @@ jobs:
       - name: Build wheels - universal2
         uses: messense/maturin-action@v1
         with:
-          args: --release --universal2 --out dist --no-sdist
+          target: universal2-apple-darwin
+          args: --release --out dist
       - name: Install built wheel - universal2
         run: |
           cd dist
@@ -42,7 +45,7 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: wheels
-          path: dist
+          path: dist/*.whl
 
   windows:
     runs-on: windows-latest
@@ -53,23 +56,25 @@ jobs:
       - uses: actions/checkout@v2
       - uses: actions/setup-python@v2
         with:
-          python-version: 3.9
+          python-version: 3.11
           architecture: ${{ matrix.target }}
       - name: Add MSBuild to PATH
         uses: microsoft/setup-msbuild@v1.0.2
       - name: Install LLVM
         run: choco install -y llvm
+      - name: Install protoc
+        run: choco install -y protoc
       - name: Install Rust toolchain
         uses: actions-rs/toolchain@v1
         with:
-          toolchain: nightly-2021-08-21
+          toolchain: nightly-2023-10-24
           profile: minimal
           default: true
       - name: Build wheels
         uses: messense/maturin-action@v1
         with:
           target: ${{ matrix.target }}
-          args: --release --out dist --no-sdist
+          args: --release --out dist
       - name: Install built wheel
         run: |
           cd dist
@@ -79,7 +84,7 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: wheels
-          path: dist
+          path: dist/*.whl
 
   linux:
     runs-on: ubuntu-latest
@@ -87,29 +92,50 @@ jobs:
       matrix:
         target: [x86_64]
     steps:
-    - uses: actions/checkout@v2
-    - uses: actions/setup-python@v2
-      with:
-        python-version: 3.9
-        architecture: x64
-    - name: Build Wheels
-      uses: messense/maturin-action@v1
-      with:
-        rust-toolchain: nightly-2021-08-21
-        target: ${{ matrix.target }}
-        manylinux: "2010"
-        args: --release --out dist --no-sdist
-    - name: Install built wheel
-      if: matrix.target == 'x86_64'
-      run: |
-        cd dist
-        pip install tikv_client --no-index --find-links . --force-reinstall
-        python -c "import tikv_client"
-    - name: Upload wheels
-      uses: actions/upload-artifact@v2
-      with:
-        name: wheels
-        path: dist
+      - uses: actions/checkout@v2
+      - uses: actions/setup-python@v2
+        with:
+          python-version: 3.11
+          architecture: x64
+
+      - name: Build Wheels
+        uses: PyO3/maturin-action@v1
+        with:
+          before-script-linux: |
+            # If we're running on rhel centos, install needed packages.
+            if command -v yum &> /dev/null; then
+                yum update -y && yum install -y perl-core openssl openssl-devel pkgconfig libatomic
+
+                # If we're running on i686 we need to symlink libatomic
+                # in order to build openssl with -latomic flag.
+                if [[ ! -d "/usr/lib64" ]]; then
+                    ln -s /usr/lib/libatomic.so.1 /usr/lib/libatomic.so
+                fi
+            else
+                # If we're running on debian-based system.
+                apt update -y && apt-get install -y libssl-dev openssl pkg-config
+            fi
+
+            curl -LO https://github.com/protocolbuffers/protobuf/releases/download/v24.4/protoc-24.4-linux-x86_64.zip
+            unzip protoc-24.4-linux-x86_64.zip -d $HOME/.local
+            export PATH="$PATH:$HOME/.local/bin"
+            protoc --version
+          rust-toolchain: nightly-2023-10-24
+          target: ${{ matrix.target }}
+          manylinux: auto
+          args: --release --out dist -i python3.11
+
+      - name: Install built wheel
+        if: matrix.target == 'x86_64'
+        run: |
+          cd dist
+          pip install tikv_client --no-index --find-links . --force-reinstall
+          python -c "import tikv_client"
+      - name: Upload wheels
+        uses: actions/upload-artifact@v2
+        with:
+          name: wheels
+          path: dist/*.whl
 
   # linux-cross:
   #   runs-on: ubuntu-latest
@@ -120,14 +146,14 @@ jobs:
   #   - uses: actions/checkout@v2
   #   - uses: actions/setup-python@v2
   #     with:
-  #       python-version: 3.9
+  #       python-version: 3.11
   #   - name: Build Wheels
   #     uses: messense/maturin-action@v1
   #     with:
   #       rust-toolchain: nightly
   #       target: ${{ matrix.target }}
   #       manylinux: auto
-  #       args: --release --out dist --no-sdist
+  #       args: --release --out dist
   #   - uses: uraimo/run-on-arch-action@v2.0.5
   #     if: matrix.target != 'ppc64'
   #     name: Install built wheel
@@ -158,14 +184,14 @@ jobs:
     runs-on: ubuntu-latest
     if: "startsWith(github.ref, 'refs/tags/')"
     # needs: [ macos, windows, linux ]
-    needs: [ macos, linux ]
+    needs: [macos, linux]
     steps:
       - uses: actions/download-artifact@v2
         with:
           name: wheels
       - uses: actions/setup-python@v2
         with:
-          python-version: 3.9
+          python-version: 3.11
       - name: Publish to PyPi
         env:
           TWINE_USERNAME: ${{ secrets.PYPI_USERNAME }}

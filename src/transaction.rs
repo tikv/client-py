@@ -26,7 +26,7 @@ impl TransactionClient {
         pd_endpoints: Vec<String>,
     ) -> PyResult<&'p PyAny> {
         future_into_py(py, async move {
-            let inner = tikv_client::TransactionClient::new(pd_endpoints, None)
+            let inner = tikv_client::TransactionClient::new(pd_endpoints)
                 .await
                 .map_err(to_py_execption)?;
             let client = TransactionClient {
