@@ -1481,7 +1481,7 @@ dependencies = [
 
 [[package]]
 name = "tikv-client"
-version = "0.0.3"
+version = "0.0.4"
 dependencies = [
  "openssl",
  "pyo3",

@@ -1,6 +1,7 @@
 // Copyright 2020 TiKV Project Authors. Licensed under Apache-2.0.
 
 use std::sync::Arc;
+use std::time::Duration;
 
 use pyo3::prelude::*;
 use pyo3::types::*;
@@ -24,9 +25,14 @@ impl TransactionClient {
         _cls: &PyType,
         py: Python<'p>,
         pd_endpoints: Vec<String>,
+        timeout: Option<f64>,
     ) -> PyResult<&'p PyAny> {
         future_into_py(py, async move {
-            let inner = tikv_client::TransactionClient::new(pd_endpoints)
+            let mut config = tikv_client::Config::default();
+            if let Some(timeout) = timeout {
+                config = config.with_timeout(Duration::from_secs_f64(timeout));
+            }
+            let inner = tikv_client::TransactionClient::new_with_config(pd_endpoints, config)
                 .await
                 .map_err(to_py_execption)?;
             let client = TransactionClient {
@@ -36,7 +42,7 @@ impl TransactionClient {
         })
     }
 
-    #[args(pessimistic = "false")]
+    #[pyo3(signature=(pessimistic = false))]
     pub fn begin<'p>(&self, py: Python<'p>, pessimistic: bool) -> PyResult<&'p PyAny> {
         let inner = self.inner.clone();
         future_into_py(py, async move {
@@ -64,7 +70,7 @@ impl TransactionClient {
         })
     }
 
-    #[args(pessimistic = "false")]
+    #[pyo3(signature=(timestamp=0, pessimistic = false))]
     pub fn snapshot(&self, timestamp: u64, pessimistic: bool) -> Snapshot {
         Snapshot {
             inner: Arc::new(RwLock::new(self.inner.snapshot(
@@ -138,7 +144,7 @@ impl Snapshot {
         })
     }
 
-    #[args(include_start = "true", include_end = "false")]
+    #[pyo3(signature=(start=None, end=None, limit=0, include_start = true, include_end=false))]
     pub fn scan<'p>(
         &self,
         py: Python<'p>,
@@ -162,7 +168,7 @@ impl Snapshot {
         })
     }
 
-    #[args(include_start = "true", include_end = "false")]
+    #[pyo3(signature=(start=None, end=None, limit=0, include_start = true, include_end=false))]
     pub fn scan_keys<'p>(
         &self,
         py: Python<'p>,
@@ -267,7 +273,7 @@ impl Transaction {
         })
     }
 
-    #[args(include_start = "true", include_end = "false")]
+    #[pyo3(signature=(start=None, end=None, limit=0, include_start = true, include_end=false))]
     pub fn scan<'p>(
         &self,
         py: Python<'p>,
@@ -291,7 +297,7 @@ impl Transaction {
         })
     }
 
-    #[args(include_start = "true", include_end = "false")]
+    #[pyo3(signature=(start=None, end=None, limit=0, include_start = true, include_end=false))]
     pub fn scan_keys<'p>(
         &self,
         py: Python<'p>,

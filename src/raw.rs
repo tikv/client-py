@@ -2,6 +2,7 @@
 
 use std::convert::TryInto;
 use std::sync::Arc;
+use std::time::Duration;
 
 use pyo3::prelude::*;
 use pyo3::types::*;
@@ -22,9 +23,14 @@ impl RawClient {
         _cls: &PyType,
         py: Python<'p>,
         pd_endpoints: Vec<String>,
+        timeout: Option<f64>,
     ) -> PyResult<&'p PyAny> {
         future_into_py(py, async move {
-            let inner = tikv_client::RawClient::new(pd_endpoints)
+            let mut config = tikv_client::Config::default();
+            if let Some(timeout) = timeout {
+                config = config.with_timeout(Duration::from_secs_f64(timeout));
+            }
+            let inner = tikv_client::RawClient::new_with_config(pd_endpoints, config)
                 .await
                 .map_err(to_py_execption)?;
             let client = RawClient {
@@ -34,10 +40,14 @@ impl RawClient {
         })
     }
 
-    #[args(cf = "\"default\"")]
-    pub fn get<'p>(&self, py: Python<'p>, key: Vec<u8>, cf: &str) -> PyResult<&'p PyAny> {
-        let inner: PyResult<tikv_client::RawClient> =
-            try { self.inner.with_cf(cf.try_into().map_err(to_py_execption)?) };
+    pub fn get<'p>(&self, py: Python<'p>, key: Vec<u8>, cf: Option<&str>) -> PyResult<&'p PyAny> {
+        let inner: PyResult<tikv_client::RawClient> = try {
+            self.inner.with_cf(
+                cf.unwrap_or("default")
+                    .try_into()
+                    .map_err(to_py_execption)?,
+            )
+        };
         future_into_py(py, async move {
             let val: Option<Py<PyBytes>> = inner?
                 .get(key)
@@ -48,15 +58,19 @@ impl RawClient {
         })
     }
 
-    #[args(cf = "\"default\"")]
     pub fn batch_get<'p>(
         &self,
         py: Python<'p>,
         keys: Vec<Vec<u8>>,
-        cf: &str,
+        cf: Option<&str>,
     ) -> PyResult<&'p PyAny> {
-        let inner: PyResult<tikv_client::RawClient> =
-            try { self.inner.with_cf(cf.try_into().map_err(to_py_execption)?) };
+        let inner: PyResult<tikv_client::RawClient> = try {
+            self.inner.with_cf(
+                cf.unwrap_or("default")
+                    .try_into()
+                    .map_err(to_py_execption)?,
+            )
+        };
         future_into_py(py, async move {
             let kvpairs = inner?.batch_get(keys).await.map_err(to_py_execption)?;
             let py_list = to_py_kv_list(kvpairs)?;
@@ -64,7 +78,7 @@ impl RawClient {
         })
     }
 
-    #[args(include_start = "true", include_end = "false", cf = "\"default\"")]
+    #[pyo3(signature=(start=None, end=None, limit=0, include_start = true, include_end=false, cf="default"))]
     pub fn scan<'p>(
         &self,
         py: Python<'p>,
@@ -85,7 +99,7 @@ impl RawClient {
         })
     }
 
-    #[args(include_start = "true", include_end = "false", cf = "\"default\"")]
+    #[pyo3(signature=(start=None, end=None, limit=0, include_start = true, include_end=false, cf="default"))]
     pub fn scan_keys<'p>(
         &self,
         py: Python<'p>,
@@ -109,31 +123,39 @@ impl RawClient {
         })
     }
 
-    #[args(cf = "\"default\"")]
     pub fn put<'p>(
         &self,
         py: Python<'p>,
         key: Vec<u8>,
         value: Vec<u8>,
-        cf: &str,
+        cf: Option<&str>,
     ) -> PyResult<&'p PyAny> {
-        let inner: PyResult<tikv_client::RawClient> =
-            try { self.inner.with_cf(cf.try_into().map_err(to_py_execption)?) };
+        let inner: PyResult<tikv_client::RawClient> = try {
+            self.inner.with_cf(
+                cf.unwrap_or("default")
+                    .try_into()
+                    .map_err(to_py_execption)?,
+            )
+        };
         future_into_py(py, async move {
             inner?.put(key, value).await.map_err(to_py_execption)?;
             Ok(Python::with_gil(|py| py.None()))
         })
     }
 
-    #[args(cf = "\"default\"")]
     pub fn batch_put<'p>(
         &self,
         py: Python<'p>,
         pairs: Py<PyDict>,
-        cf: &str,
+        cf: Option<&str>,
     ) -> PyResult<&'p PyAny> {
-        let inner: PyResult<tikv_client::RawClient> =
-            try { self.inner.with_cf(cf.try_into().map_err(to_py_execption)?) };
+        let inner: PyResult<tikv_client::RawClient> = try {
+            self.inner.with_cf(
+                cf.unwrap_or("default")
+                    .try_into()
+                    .map_err(to_py_execption)?,
+            )
+        };
         future_into_py(py, async move {
             let pairs = from_py_dict(pairs)?;
             inner?.batch_put(pairs).await.map_err(to_py_execption)?;
@@ -141,32 +163,45 @@ impl RawClient {
         })
     }
 
-    #[args(cf = "\"default\"")]
-    pub fn delete<'p>(&self, py: Python<'p>, key: Vec<u8>, cf: &str) -> PyResult<&'p PyAny> {
-        let inner: PyResult<tikv_client::RawClient> =
-            try { self.inner.with_cf(cf.try_into().map_err(to_py_execption)?) };
+    pub fn delete<'p>(
+        &self,
+        py: Python<'p>,
+        key: Vec<u8>,
+        cf: Option<&str>,
+    ) -> PyResult<&'p PyAny> {
+        let inner: PyResult<tikv_client::RawClient> = try {
+            self.inner.with_cf(
+                cf.unwrap_or("default")
+                    .try_into()
+                    .map_err(to_py_execption)?,
+            )
+        };
         future_into_py(py, async move {
             inner?.delete(key).await.map_err(to_py_execption)?;
             Ok(Python::with_gil(|py| py.None()))
         })
     }
 
-    #[args(cf = "\"default\"")]
     pub fn batch_delete<'p>(
         &self,
         py: Python<'p>,
         keys: Vec<Vec<u8>>,
-        cf: &str,
+        cf: Option<&str>,
     ) -> PyResult<&'p PyAny> {
-        let inner: PyResult<tikv_client::RawClient> =
-            try { self.inner.with_cf(cf.try_into().map_err(to_py_execption)?) };
+        let inner: PyResult<tikv_client::RawClient> = try {
+            self.inner.with_cf(
+                cf.unwrap_or("default")
+                    .try_into()
+                    .map_err(to_py_execption)?,
+            )
+        };
         future_into_py(py, async move {
             inner?.batch_delete(keys).await.map_err(to_py_execption)?;
             Ok(Python::with_gil(|py| py.None()))
         })
     }
 
-    #[args(include_start = "true", include_end = "false", cf = "\"default\"")]
+    #[pyo3(signature=(start=None, end=None, include_start = true, include_end=false, cf="default"))]
     pub fn delete_range<'p>(
         &self,
         py: Python<'p>,
