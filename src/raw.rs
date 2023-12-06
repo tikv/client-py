@@ -115,20 +115,16 @@ impl RawClient {
         })
     }
 
+    #[pyo3(signature=(key, value, cf="default"))]
     pub fn put<'p>(
         &self,
         py: Python<'p>,
         key: Vec<u8>,
         value: Vec<u8>,
-        cf: Option<&str>,
+        cf: &str,
     ) -> PyResult<&'p PyAny> {
-        let inner: PyResult<tikv_client::RawClient> = try {
-            self.inner.with_cf(
-                cf.unwrap_or("default")
-                    .try_into()
-                    .map_err(to_py_execption)?,
-            )
-        };
+        let inner: PyResult<tikv_client::RawClient> =
+            try { self.inner.with_cf(cf.try_into().map_err(to_py_execption)?) };
         future_into_py(py, async move {
             inner?.put(key, value).await.map_err(to_py_execption)?;
             Ok(Python::with_gil(|py| py.None()))
