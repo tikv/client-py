@@ -1,5 +1,11 @@
 # Change Log
 
+* 0.0.4
+
+    * support being able to configure tikv timeout from client
+
+    * Support latest version of tikv_client
+
 * 0.0.3
 
     * Add `Transaction.rollback()` to abort a transaction.
